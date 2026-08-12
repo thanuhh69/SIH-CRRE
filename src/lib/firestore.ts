@@ -1,4 +1,15 @@
 import { 
+  collection, 
+  doc, 
+  getDocs, 
+  setDoc, 
+  updateDoc, 
+  deleteDoc, 
+  query, 
+  orderBy 
+} from 'firebase/firestore';
+import { db } from './firebase';
+import { 
   TeamRegistration, 
   Alumni, 
   ProblemStatement, 
@@ -13,6 +24,14 @@ import {
   VIDEO_DATA, 
   ANNOUNCEMENTS_DATA 
 } from '@/data/placeholder';
+
+// Check if live Firebase credentials are present
+const isFirebaseConfigured = () => {
+  return (
+    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID &&
+    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== 'demo-project'
+  );
+};
 
 // Helper to interact with local storage fallback
 const getLocalData = <T>(key: string, initialData: T): T => {
@@ -35,7 +54,7 @@ const setLocalData = <T>(key: string, data: T): void => {
   }
 };
 
-// Initial Registrations dataset
+// Initial Registrations dataset for fallback
 const INITIAL_REGISTRATIONS: TeamRegistration[] = [
   {
     id: 'SIH-2026-1001',
@@ -51,77 +70,125 @@ const INITIAL_REGISTRATIONS: TeamRegistration[] = [
     members: [
       { name: 'K. Sai Teja', email: 'saiteja@sircrrcoestd.in', phone: '9876543210', rollNumber: '21B91A0501', department: 'CSE', year: '4th Year', isLeader: true },
       { name: 'P. Anusha', email: 'anusha@sircrrcoestd.in', phone: '9876543211', rollNumber: '21B91A0502', department: 'CSE', year: '4th Year' },
-      { name: 'M. Kalyan', email: 'kalyan@sircrrcoestd.in', phone: '9876543212', rollNumber: '21B91A0503', department: 'ECE', year: '3rd Year' },
-      { name: 'R. Divya', email: 'divya@sircrrcoestd.in', phone: '9876543213', rollNumber: '22B91A0504', department: 'IT', year: '3rd Year' },
     ],
     status: 'approved',
     submittedAt: '2026-08-10T10:30:00.000Z'
-  },
-  {
-    id: 'SIH-2026-1002',
-    teamName: 'CyberGuardians',
-    leaderName: 'M. Rahul Chowdary',
-    leaderEmail: 'rahul@sircrrcoestd.in',
-    leaderPhone: '+91 91234 56789',
-    department: 'Information Technology',
-    year: '3rd Year',
-    problemStatementId: 'SIH1290',
-    problemStatementTitle: 'Blockchain-Based Fraud-Proof Academic Marksheet',
-    facultyMentor: 'Prof. G. Rama Krishna',
-    members: [
-      { name: 'M. Rahul Chowdary', email: 'rahul@sircrrcoestd.in', phone: '9123456789', rollNumber: '22B91A1201', department: 'IT', year: '3rd Year', isLeader: true },
-      { name: 'S. Bhavana', email: 'bhavana@sircrrcoestd.in', phone: '9123456790', rollNumber: '22B91A1202', department: 'IT', year: '3rd Year' },
-    ],
-    status: 'pending',
-    submittedAt: '2026-08-11T14:15:00.000Z'
   }
 ];
 
-// REGISTRATIONS API
+// ==========================================
+// REGISTRATIONS COLLECTION API (Firestore + Fallback)
+// ==========================================
 export const getRegistrations = async (): Promise<TeamRegistration[]> => {
+  if (isFirebaseConfigured()) {
+    try {
+      const q = query(collection(db, 'registrations'));
+      const snapshot = await getDocs(q);
+      if (!snapshot.empty) {
+        return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as TeamRegistration));
+      }
+    } catch (err) {
+      console.warn('Firestore registrations query failed, using fallback database:', err);
+    }
+  }
   return getLocalData('registrations', INITIAL_REGISTRATIONS);
 };
 
 export const createRegistration = async (registrationData: Omit<TeamRegistration, 'id' | 'submittedAt' | 'status'>): Promise<TeamRegistration> => {
-  const current = await getRegistrations();
   const randomNum = Math.floor(1000 + Math.random() * 9000);
+  const regId = `SIH-2026-${randomNum}`;
   const newRegistration: TeamRegistration = {
     ...registrationData,
-    id: `SIH-2026-${randomNum}`,
+    id: regId,
     status: 'pending',
     submittedAt: new Date().toISOString(),
   };
 
+  if (isFirebaseConfigured()) {
+    try {
+      await setDoc(doc(db, 'registrations', regId), newRegistration);
+      console.log('Registration written to Firestore collection "registrations":', regId);
+    } catch (err) {
+      console.error('Error writing registration to Firestore:', err);
+    }
+  }
+
+  // Update local fallback store as well for immediate UI sync
+  const current = getLocalData('registrations', INITIAL_REGISTRATIONS);
   const updated = [newRegistration, ...current];
   setLocalData('registrations', updated);
+
   return newRegistration;
 };
 
 export const updateRegistrationStatus = async (id: string, status: 'approved' | 'rejected' | 'pending'): Promise<void> => {
-  const current = await getRegistrations();
+  if (isFirebaseConfigured()) {
+    try {
+      await updateDoc(doc(db, 'registrations', id), { status });
+    } catch (err) {
+      console.error('Firestore update error:', err);
+    }
+  }
+
+  const current = getLocalData('registrations', INITIAL_REGISTRATIONS);
   const updated = current.map(item => item.id === id ? { ...item, status } : item);
   setLocalData('registrations', updated);
 };
 
 export const updateRegistrationPPT = async (id: string, pptUrl: string, pptFileName: string): Promise<void> => {
-  const current = await getRegistrations();
+  if (isFirebaseConfigured()) {
+    try {
+      await updateDoc(doc(db, 'registrations', id), { pptUrl, pptFileName });
+    } catch (err) {
+      console.error('Firestore PPT update error:', err);
+    }
+  }
+
+  const current = getLocalData('registrations', INITIAL_REGISTRATIONS);
   const updated = current.map(item => item.id === id ? { ...item, pptUrl, pptFileName } : item);
   setLocalData('registrations', updated);
 };
 
 export const deleteRegistration = async (id: string): Promise<void> => {
-  const current = await getRegistrations();
+  if (isFirebaseConfigured()) {
+    try {
+      await deleteDoc(doc(db, 'registrations', id));
+    } catch (err) {
+      console.error('Firestore delete error:', err);
+    }
+  }
+
+  const current = getLocalData('registrations', INITIAL_REGISTRATIONS);
   const updated = current.filter(item => item.id !== id);
   setLocalData('registrations', updated);
 };
 
-// ALUMNI API
+// ==========================================
+// ALUMNI COLLECTION API
+// ==========================================
 export const getAlumni = async (): Promise<Alumni[]> => {
+  if (isFirebaseConfigured()) {
+    try {
+      const snapshot = await getDocs(collection(db, 'alumni'));
+      if (!snapshot.empty) {
+        return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Alumni));
+      }
+    } catch (err) {
+      console.warn('Firestore alumni query failed, using fallback:', err);
+    }
+  }
   return getLocalData('alumni', ALUMNI_DATA);
 };
 
 export const saveAlumni = async (alumni: Alumni): Promise<void> => {
-  const current = await getAlumni();
+  if (isFirebaseConfigured()) {
+    try {
+      await setDoc(doc(db, 'alumni', alumni.id), alumni);
+    } catch (err) {
+      console.error('Firestore saveAlumni error:', err);
+    }
+  }
+  const current = getLocalData('alumni', ALUMNI_DATA);
   const index = current.findIndex(a => a.id === alumni.id);
   let updated: Alumni[];
   if (index >= 0) {
@@ -134,18 +201,44 @@ export const saveAlumni = async (alumni: Alumni): Promise<void> => {
 };
 
 export const deleteAlumni = async (id: string): Promise<void> => {
-  const current = await getAlumni();
+  if (isFirebaseConfigured()) {
+    try {
+      await deleteDoc(doc(db, 'alumni', id));
+    } catch (err) {
+      console.error('Firestore deleteAlumni error:', err);
+    }
+  }
+  const current = getLocalData('alumni', ALUMNI_DATA);
   const updated = current.filter(a => a.id !== id);
   setLocalData('alumni', updated);
 };
 
-// PROBLEM STATEMENTS API
+// ==========================================
+// PROBLEM STATEMENTS COLLECTION API
+// ==========================================
 export const getProblemStatements = async (): Promise<ProblemStatement[]> => {
+  if (isFirebaseConfigured()) {
+    try {
+      const snapshot = await getDocs(collection(db, 'problemStatements'));
+      if (!snapshot.empty) {
+        return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as ProblemStatement));
+      }
+    } catch (err) {
+      console.warn('Firestore problemStatements query failed, using fallback:', err);
+    }
+  }
   return getLocalData('problem_statements', PROBLEM_STATEMENTS_DATA);
 };
 
 export const saveProblemStatement = async (ps: ProblemStatement): Promise<void> => {
-  const current = await getProblemStatements();
+  if (isFirebaseConfigured()) {
+    try {
+      await setDoc(doc(db, 'problemStatements', ps.id), ps);
+    } catch (err) {
+      console.error('Firestore saveProblemStatement error:', err);
+    }
+  }
+  const current = getLocalData('problem_statements', PROBLEM_STATEMENTS_DATA);
   const index = current.findIndex(p => p.id === ps.id);
   let updated: ProblemStatement[];
   if (index >= 0) {
@@ -158,18 +251,27 @@ export const saveProblemStatement = async (ps: ProblemStatement): Promise<void> 
 };
 
 export const deleteProblemStatement = async (id: string): Promise<void> => {
-  const current = await getProblemStatements();
+  if (isFirebaseConfigured()) {
+    try {
+      await deleteDoc(doc(db, 'problemStatements', id));
+    } catch (err) {
+      console.error('Firestore deleteProblemStatement error:', err);
+    }
+  }
+  const current = getLocalData('problem_statements', PROBLEM_STATEMENTS_DATA);
   const updated = current.filter(p => p.id !== id);
   setLocalData('problem_statements', updated);
 };
 
-// EVENTS / DATES API
+// ==========================================
+// EVENTS & ANNOUNCEMENTS API
+// ==========================================
 export const getEventDates = async (): Promise<EventDate[]> => {
   return getLocalData('events', IMPORTANT_DATES_DATA);
 };
 
 export const saveEventDate = async (event: EventDate): Promise<void> => {
-  const current = await getEventDates();
+  const current = getLocalData('events', IMPORTANT_DATES_DATA);
   const index = current.findIndex(e => e.id === event.id);
   let updated: EventDate[];
   if (index >= 0) {
@@ -181,13 +283,12 @@ export const saveEventDate = async (event: EventDate): Promise<void> => {
   setLocalData('events', updated);
 };
 
-// ANNOUNCEMENTS API
 export const getAnnouncements = async (): Promise<Announcement[]> => {
   return getLocalData('announcements', ANNOUNCEMENTS_DATA);
 };
 
 export const saveAnnouncement = async (announcement: Announcement): Promise<void> => {
-  const current = await getAnnouncements();
+  const current = getLocalData('announcements', ANNOUNCEMENTS_DATA);
   const index = current.findIndex(a => a.id === announcement.id);
   let updated: Announcement[];
   if (index >= 0) {
@@ -200,12 +301,11 @@ export const saveAnnouncement = async (announcement: Announcement): Promise<void
 };
 
 export const deleteAnnouncement = async (id: string): Promise<void> => {
-  const current = await getAnnouncements();
+  const current = getLocalData('announcements', ANNOUNCEMENTS_DATA);
   const updated = current.filter(a => a.id !== id);
   setLocalData('announcements', updated);
 };
 
-// VIDEOS API
 export const getMainVideo = async (): Promise<VideoItem> => {
   return getLocalData('video_main', VIDEO_DATA);
 };
