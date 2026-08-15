@@ -289,6 +289,7 @@ export default function AdminDashboardPage() {
               { id: 'registrations', label: 'Team Registrations', icon: Users },
               { id: 'alumni', label: 'Alumni Showcase', icon: ShieldCheck },
               { id: 'problems', label: 'Problem Statements', icon: BookOpen },
+              { id: 'video', label: 'About SIH Video', icon: Film },
               { id: 'announcements', label: 'Notice Board', icon: Bell },
               { id: 'dates', label: 'Important Dates', icon: Calendar },
             ].map(tab => {
