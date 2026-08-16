@@ -29,6 +29,7 @@ import {
   EventDate, 
   VideoItem 
 } from '@/types';
+import { uploadFileWithFallback } from '@/lib/storage';
 import { 
   Lock, 
   KeyRound, 
@@ -48,7 +49,9 @@ import {
   BookOpen, 
   ShieldCheck, 
   LogOut,
-  Edit2
+  Edit2,
+  Upload,
+  ImageIcon
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
@@ -74,6 +77,22 @@ export default function AdminDashboardPage() {
   const [editingPs, setEditingPs] = useState<Partial<ProblemStatement> | null>(null);
   const [editingAnnouncement, setEditingAnnouncement] = useState<Partial<Announcement> | null>(null);
   const [editingEvent, setEditingEvent] = useState<Partial<EventDate> | null>(null);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+
+  const handleAlumniPhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !editingAlumni) return;
+    setIsUploadingPhoto(true);
+    try {
+      const photoUrl = await uploadFileWithFallback(file, 'alumni');
+      setEditingAlumni(prev => prev ? { ...prev, photoUrl } : null);
+    } catch (err) {
+      console.error('Error uploading alumni photo:', err);
+      alert('Failed to process image file.');
+    } finally {
+      setIsUploadingPhoto(false);
+    }
+  };
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -720,10 +739,62 @@ export default function AdminDashboardPage() {
         {/* MODAL: Edit/Add Alumni */}
         {editingAlumni && (
           <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-            <form onSubmit={handleSaveAlumni} className="bg-white max-w-lg w-full rounded-lg border-2 border-college-gold p-6 space-y-4 text-xs">
+            <form onSubmit={handleSaveAlumni} className="bg-white max-w-lg w-full rounded-lg border-2 border-college-gold p-6 space-y-4 text-xs max-h-[90vh] overflow-y-auto">
               <h3 className="font-serif font-bold text-lg text-college-navy border-b border-slate-200 pb-2">
                 {editingAlumni.id ? 'Edit Alumni Record' : 'Add New Alumni Record'}
               </h3>
+
+              {/* Photo Upload Section */}
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded space-y-2">
+                <label className="block font-bold text-slate-800 flex items-center gap-1.5">
+                  <ImageIcon className="w-4 h-4 text-college-gold" />
+                  <span>Alumni Profile Photo</span>
+                </label>
+
+                <div className="flex flex-col sm:flex-row items-center gap-3">
+                  {editingAlumni.photoUrl ? (
+                    <div className="relative w-16 h-16 rounded border border-slate-300 overflow-hidden shrink-0 shadow-xs">
+                      <img src={editingAlumni.photoUrl} alt="Alumni Preview" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => setEditingAlumni({ ...editingAlumni, photoUrl: '' })}
+                        className="absolute top-0 right-0 bg-red-600 text-white text-[9px] p-0.5"
+                        title="Remove Photo"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="w-16 h-16 rounded bg-slate-200 border border-slate-300 flex items-center justify-center text-slate-400 shrink-0">
+                      <ImageIcon className="w-8 h-8" />
+                    </div>
+                  )}
+
+                  <div className="space-y-1.5 w-full">
+                    <label className="inline-flex items-center gap-1.5 bg-college-navy hover:bg-college-blue text-white px-3 py-1.5 rounded cursor-pointer text-xs font-bold transition-colors">
+                      <Upload className="w-3.5 h-3.5 text-college-gold" />
+                      <span>{isUploadingPhoto ? 'Uploading Photo...' : 'Upload Image File'}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAlumniPhotoUpload}
+                        className="hidden"
+                        disabled={isUploadingPhoto}
+                      />
+                    </label>
+
+                    <div className="text-[10px] text-slate-500">OR paste image URL directly:</div>
+                    <input
+                      type="url"
+                      placeholder="https://example.com/photo.jpg"
+                      value={editingAlumni.photoUrl || ''}
+                      onChange={e => setEditingAlumni({ ...editingAlumni, photoUrl: e.target.value })}
+                      className="w-full px-2 py-1 border border-slate-300 rounded font-mono text-[11px]"
+                    />
+                  </div>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <input required placeholder="Alumni Full Name" value={editingAlumni.name || ''} onChange={e => setEditingAlumni({ ...editingAlumni, name: e.target.value })} className="p-2 border rounded" />
                 <input required placeholder="Department" value={editingAlumni.department || ''} onChange={e => setEditingAlumni({ ...editingAlumni, department: e.target.value })} className="p-2 border rounded" />
@@ -736,7 +807,7 @@ export default function AdminDashboardPage() {
               <input placeholder="Current Company / Organization" value={editingAlumni.company || ''} onChange={e => setEditingAlumni({ ...editingAlumni, company: e.target.value })} className="w-full p-2 border rounded" />
               <div className="flex justify-end gap-2 pt-2 border-t">
                 <button type="button" onClick={() => setEditingAlumni(null)} className="px-4 py-2 bg-slate-100 rounded font-bold">Cancel</button>
-                <button type="submit" className="px-5 py-2 bg-college-navy text-white rounded font-bold">Save Alumni</button>
+                <button type="submit" disabled={isUploadingPhoto} className="px-5 py-2 bg-college-navy text-white rounded font-bold hover:bg-college-blue disabled:opacity-50">Save Alumni</button>
               </div>
             </form>
           </div>
