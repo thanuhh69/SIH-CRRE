@@ -650,9 +650,10 @@ export default function AdminDashboardPage() {
                     <div>
                       <div className="flex items-center gap-2">
                         {ann.isUrgent && <span className="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">URGENT</span>}
+                        <span className="bg-college-dark text-college-gold text-[10px] font-mono font-bold px-2 py-0.5 rounded">{ann.tag}</span>
                         <h4 className="font-bold text-sm text-college-navy">{ann.title}</h4>
                       </div>
-                      <p className="text-xs text-slate-600 mt-1">{ann.content}</p>
+                      {ann.link && <p className="text-xs text-slate-600 mt-1 font-mono">Target Link: {ann.link}</p>}
                       <span className="text-[10px] text-slate-400 font-mono mt-1 block">Posted: {ann.date}</span>
                     </div>
                     <div className="flex items-center gap-2">

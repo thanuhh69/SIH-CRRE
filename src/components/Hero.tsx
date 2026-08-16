@@ -2,8 +2,8 @@
 
 import React from 'react';
 import Link from 'next/link';
-import DynamicHero3D from '@/components/Hero3DObject';
-import { ArrowRight, Shield, Lightbulb, Users, Award, ChevronRight } from 'lucide-react';
+import SihLogo from '@/components/SihLogo';
+import { ArrowRight, Shield, Lightbulb, Users, Award, ChevronRight, Sparkles } from 'lucide-react';
 import { HERO_DATA } from '@/data/placeholder';
 
 export default function Hero() {
@@ -93,16 +93,19 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Right Column: Restrained 3D Mesh Object */}
+          {/* Right Column: Official SIH Logo Emblem */}
           <div className="lg:col-span-5 flex justify-center">
-            <div className="w-full max-w-md bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-sm shadow-2xl relative">
-              <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-college-navy/80 px-2.5 py-1 rounded text-[10px] text-college-gold font-mono font-semibold">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                <span>INNOVATION ENGINE 3D</span>
+            <div className="w-full max-w-md bg-white/5 border border-white/10 rounded-xl p-5 backdrop-blur-sm shadow-2xl relative flex flex-col items-center">
+              <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-college-navy/90 px-2.5 py-1 rounded text-[10px] text-college-gold font-mono font-semibold border border-college-gold/30">
+                <Sparkles className="w-3 h-3 text-college-gold animate-pulse" />
+                <span>OFFICIAL SIH 2026 EMBLEM</span>
               </div>
-              <DynamicHero3D />
-              <div className="text-center text-[11px] text-slate-400 font-mono">
-                Sir C.R. Reddy CoE · Innovation Cell
+              <SihLogo className="w-full h-80 my-2" />
+              <div className="text-center text-[11px] text-slate-300 font-serif font-bold tracking-wide mt-2">
+                Sir C.R. Reddy College of Engineering (Autonomous)
+              </div>
+              <div className="text-center text-[10px] text-college-gold font-mono mt-0.5">
+                Official Hackathon Portal · Eluru, AP
               </div>
             </div>
           </div>
