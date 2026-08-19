@@ -12,8 +12,12 @@ export default function Footer() {
         {/* Col 1: Institutional Info */}
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-college-navy p-1 flex items-center justify-center border border-college-gold shrink-0">
-              <Award className="w-5 h-5 text-college-gold" />
+            <div className="w-11 h-11 rounded-full bg-slate-900 p-1 flex items-center justify-center border border-college-gold shrink-0 overflow-hidden">
+              <img
+                src="/sih-logo.png"
+                alt="Sir C. R. Reddy College of Engineering SIH Official Logo"
+                className="w-full h-full object-contain"
+              />
             </div>
             <div>
               <h3 className="font-serif font-bold text-white text-sm tracking-tight leading-tight">

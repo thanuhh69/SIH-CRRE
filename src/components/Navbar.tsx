@@ -66,12 +66,13 @@ export default function Navbar() {
       {/* Main College Header Banner */}
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-3.5 group">
-          {/* Institutional Crest Shield Icon */}
-          <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-college-navy p-1 flex items-center justify-center border-2 border-college-gold shadow-md shrink-0">
-            <div className="w-full h-full rounded-full border border-college-gold/40 flex flex-col items-center justify-center text-white bg-gradient-to-b from-college-blue to-college-dark">
-              <Award className="w-6 h-6 text-college-gold" />
-              <span className="text-[8px] font-bold tracking-widest text-college-goldLight">CRR</span>
-            </div>
+          {/* Official SIH & College Emblem Logo */}
+          <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-slate-900 p-1 flex items-center justify-center border-2 border-college-gold shadow-md shrink-0 overflow-hidden group-hover:scale-105 transition-transform">
+            <img
+              src="/sih-logo.png"
+              alt="Sir C. R. Reddy College of Engineering SIH Official Logo"
+              className="w-full h-full object-contain"
+            />
           </div>
           <div>
             <h1 className="font-serif font-bold text-base md:text-xl lg:text-2xl text-college-navy tracking-tight leading-tight group-hover:text-college-accent transition-colors">
