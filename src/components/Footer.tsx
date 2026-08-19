@@ -19,13 +19,6 @@ export default function Footer() {
                 className="w-full h-full object-contain"
               />
             </div>
-            <div className="w-11 h-11 rounded-full bg-slate-900 p-0.5 flex items-center justify-center border border-college-gold shrink-0 overflow-hidden">
-              <img
-                src="/sih-logo.png"
-                alt="Smart India Hackathon Official SIH Logo"
-                className="w-full h-full object-contain"
-              />
-            </div>
             <div>
               <h3 className="font-serif font-bold text-white text-sm tracking-tight leading-tight">
                 {HERO_DATA.collegeName}
