@@ -20,7 +20,8 @@ import {
   Announcement,
   ResultItem,
   ResultsConfig,
-  SamplePPTResource
+  SamplePPTResource,
+  ParticipationMetrics
 } from '@/types';
 import { 
   ALUMNI_DATA, 
@@ -594,6 +595,72 @@ export const subscribeSamplePPT = (callback: (ppt: SamplePPTResource | null) => 
   const handleStorage = (e: StorageEvent) => {
     if (e.key === 'sih_2026_samplePPT') {
       callback(getLocalData('samplePPT', INITIAL_SAMPLE_PPT));
+    }
+  };
+  if (typeof window !== 'undefined') {
+    window.addEventListener('storage', handleStorage);
+  }
+  return () => {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('storage', handleStorage);
+    }
+  };
+};
+
+// ==========================================
+// PARTICIPATION METRICS API
+// ==========================================
+const INITIAL_METRICS: ParticipationMetrics = {
+  teamsParticipated: '50+',
+  studentsInvolved: '300+',
+  innovativeSolutions: '45+',
+  sihAlumni: '120+'
+};
+
+export const getParticipationMetrics = async (): Promise<ParticipationMetrics> => {
+  if (isFirebaseConfigured()) {
+    try {
+      const docSnap = await getDoc(doc(db, 'metrics', 'main'));
+      if (docSnap.exists()) {
+        return docSnap.data() as ParticipationMetrics;
+      }
+    } catch (err) {
+      console.warn('Firestore getParticipationMetrics error:', err);
+    }
+  }
+  return getLocalData('metrics', INITIAL_METRICS);
+};
+
+export const saveParticipationMetrics = async (metrics: ParticipationMetrics): Promise<void> => {
+  if (isFirebaseConfigured()) {
+    try {
+      await setDoc(doc(db, 'metrics', 'main'), metrics);
+    } catch (err) {
+      console.error('Firestore saveParticipationMetrics error:', err);
+    }
+  }
+  setLocalData('metrics', metrics);
+};
+
+export const subscribeParticipationMetrics = (callback: (metrics: ParticipationMetrics) => void) => {
+  if (isFirebaseConfigured()) {
+    try {
+      return onSnapshot(doc(db, 'metrics', 'main'), (docSnap) => {
+        if (docSnap.exists()) {
+          callback(docSnap.data() as ParticipationMetrics);
+        } else {
+          callback(getLocalData('metrics', INITIAL_METRICS));
+        }
+      });
+    } catch (err) {
+      console.warn('Firestore metrics real-time listener error:', err);
+    }
+  }
+
+  callback(getLocalData('metrics', INITIAL_METRICS));
+  const handleStorage = (e: StorageEvent) => {
+    if (e.key === 'sih_2026_metrics') {
+      callback(getLocalData('metrics', INITIAL_METRICS));
     }
   };
   if (typeof window !== 'undefined') {

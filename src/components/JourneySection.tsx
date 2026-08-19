@@ -1,8 +1,32 @@
-import React from 'react';
-import { JOURNEY_STATS } from '@/data/placeholder';
-import { Trophy, Award, BookOpen, Sparkles } from 'lucide-react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { subscribeParticipationMetrics } from '@/lib/firestore';
+import { ParticipationMetrics } from '@/types';
+import { Trophy, BookOpen, Sparkles } from 'lucide-react';
 
 export default function JourneySection() {
+  const [metrics, setMetrics] = useState<ParticipationMetrics>({
+    teamsParticipated: '50+',
+    studentsInvolved: '300+',
+    innovativeSolutions: '45+',
+    sihAlumni: '120+'
+  });
+
+  useEffect(() => {
+    const unsub = subscribeParticipationMetrics((data) => {
+      setMetrics(data);
+    });
+    return () => unsub();
+  }, []);
+
+  const stats = [
+    { label: 'TEAMS PARTICIPATED', value: metrics.teamsParticipated },
+    { label: 'STUDENTS INVOLVED', value: metrics.studentsInvolved },
+    { label: 'INNOVATIVE SOLUTIONS', value: metrics.innovativeSolutions },
+    { label: 'SIH ALUMNI', value: metrics.sihAlumni }
+  ];
+
   return (
     <section id="journey" className="py-16 bg-slate-50 border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4">
@@ -40,7 +64,7 @@ export default function JourneySection() {
             </div>
           </div>
 
-          {/* Right Stats Block Column (Strictly Placeholder Numbers per specs) */}
+          {/* Right Stats Block Column (Managed Dynamically via Admin Portal) */}
           <div className="lg:col-span-5">
             <div className="bg-college-dark text-white p-6 md:p-8 rounded-lg shadow-college-lg border-2 border-college-gold/40 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-college-gold/10 rounded-full blur-2xl pointer-events-none" />
@@ -50,12 +74,12 @@ export default function JourneySection() {
                   <Sparkles className="w-5 h-5 text-college-gold" /> Participation Metrics
                 </h3>
                 <span className="text-[10px] font-mono bg-college-gold/20 text-college-gold px-2 py-0.5 rounded border border-college-gold/30">
-                  HISTORICAL DATA
+                  DYNAMIC METRICS
                 </span>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                {JOURNEY_STATS.map((stat, idx) => (
+                {stats.map((stat, idx) => (
                   <div 
                     key={idx}
                     className="bg-white/5 border border-white/10 p-4 rounded text-center hover:bg-white/10 transition-transform transform hover:-translate-y-1"
@@ -71,7 +95,7 @@ export default function JourneySection() {
               </div>
 
               <div className="mt-6 pt-4 border-t border-white/10 text-center text-[10px] text-slate-400">
-                Official statistics will be updated dynamically after SIH 2026 internal evaluations.
+                Official statistics updated dynamically by SIH 2026 Admin Committee.
               </div>
             </div>
           </div>

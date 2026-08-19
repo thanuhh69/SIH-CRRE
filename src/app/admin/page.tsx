@@ -35,7 +35,9 @@ import {
   updateResultsConfig,
   getSamplePPT,
   saveSamplePPT,
-  deleteSamplePPT
+  deleteSamplePPT,
+  getParticipationMetrics,
+  saveParticipationMetrics
 } from '@/lib/firestore';
 import { 
   TeamRegistration, 
@@ -46,7 +48,8 @@ import {
   VideoItem,
   ResultItem,
   ResultsConfig,
-  SamplePPTResource
+  SamplePPTResource,
+  ParticipationMetrics
 } from '@/types';
 import { uploadFileWithFallback } from '@/lib/storage';
 import { 
@@ -92,7 +95,7 @@ export default function AdminDashboardPage() {
 
   // Tab State
   const [activeTab, setActiveTab] = useState<
-    'registrations' | 'results' | 'resources' | 'alumni' | 'problems' | 'video' | 'announcements' | 'dates'
+    'registrations' | 'results' | 'resources' | 'metrics' | 'alumni' | 'problems' | 'video' | 'announcements' | 'dates'
   >('registrations');
 
   // Data States
@@ -102,6 +105,15 @@ export default function AdminDashboardPage() {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [events, setEvents] = useState<EventDate[]>([]);
   const [videoData, setVideoData] = useState<VideoItem | null>(null);
+
+  // Participation Metrics State
+  const [metricsForm, setMetricsForm] = useState<ParticipationMetrics>({
+    teamsParticipated: '50+',
+    studentsInvolved: '300+',
+    innovativeSolutions: '45+',
+    sihAlumni: '120+'
+  });
+  const [metricsSaved, setMetricsSaved] = useState(false);
 
   // Results State
   const [resultsList, setResultsList] = useState<ResultItem[]>([]);
@@ -168,6 +180,21 @@ export default function AdminDashboardPage() {
 
     const ppt = await getSamplePPT();
     setSamplePPT(ppt);
+
+    const met = await getParticipationMetrics();
+    setMetricsForm(met);
+  };
+
+  const handleSaveMetrics = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const updatedMetrics: ParticipationMetrics = {
+      ...metricsForm,
+      updatedAt: new Date().toISOString(),
+      updatedBy: currentUser?.email || 'Admin Committee'
+    };
+    await saveParticipationMetrics(updatedMetrics);
+    setMetricsSaved(true);
+    setTimeout(() => setMetricsSaved(false), 4000);
   };
 
   // Firebase Email/Password Auth Handlers
@@ -653,6 +680,7 @@ export default function AdminDashboardPage() {
               { id: 'registrations', label: 'Registrations', icon: Users },
               { id: 'results', label: 'Results Management', icon: Trophy },
               { id: 'resources', label: 'Sample PPT Resource', icon: FileText },
+              { id: 'metrics', label: 'Participation Metrics', icon: Sparkles },
               { id: 'alumni', label: 'Alumni Showcase', icon: ShieldCheck },
               { id: 'problems', label: 'Problem Statements', icon: BookOpen },
               { id: 'video', label: 'About SIH Video', icon: Film },
@@ -1046,6 +1074,95 @@ export default function AdminDashboardPage() {
                   </div>
                 )}
               </div>
+            </div>
+          )}
+
+          {/* TAB: PARTICIPATION METRICS MANAGEMENT */}
+          {activeTab === 'metrics' && (
+            <div className="p-6 space-y-6">
+              <div className="bg-slate-900 text-white p-6 rounded-lg border-2 border-college-gold flex justify-between items-center">
+                <div>
+                  <h3 className="font-serif font-bold text-xl text-white flex items-center gap-2">
+                    <Sparkles className="w-6 h-6 text-college-gold" /> HOME PAGE PARTICIPATION METRICS
+                  </h3>
+                  <p className="text-xs text-slate-300 mt-1">
+                    Manage the dynamic statistics shown in the "Our SIH Journey" section on the main website homepage.
+                  </p>
+                </div>
+              </div>
+
+              <form onSubmit={handleSaveMetrics} className="bg-white border-2 border-slate-300 rounded-xl p-6 shadow-sm max-w-2xl mx-auto space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-college-navy mb-1">
+                      Teams Participated (e.g. 50+)
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={metricsForm.teamsParticipated}
+                      onChange={e => setMetricsForm({ ...metricsForm, teamsParticipated: e.target.value })}
+                      className="w-full p-2.5 text-sm border border-slate-300 rounded font-mono font-bold text-college-navy focus:ring-2 focus:ring-college-gold outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-college-navy mb-1">
+                      Students Involved (e.g. 300+)
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={metricsForm.studentsInvolved}
+                      onChange={e => setMetricsForm({ ...metricsForm, studentsInvolved: e.target.value })}
+                      className="w-full p-2.5 text-sm border border-slate-300 rounded font-mono font-bold text-college-navy focus:ring-2 focus:ring-college-gold outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-college-navy mb-1">
+                      Innovative Solutions (e.g. 45+)
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={metricsForm.innovativeSolutions}
+                      onChange={e => setMetricsForm({ ...metricsForm, innovativeSolutions: e.target.value })}
+                      className="w-full p-2.5 text-sm border border-slate-300 rounded font-mono font-bold text-college-navy focus:ring-2 focus:ring-college-gold outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-college-navy mb-1">
+                      SIH Alumni (e.g. 120+)
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={metricsForm.sihAlumni}
+                      onChange={e => setMetricsForm({ ...metricsForm, sihAlumni: e.target.value })}
+                      className="w-full p-2.5 text-sm border border-slate-300 rounded font-mono font-bold text-college-navy focus:ring-2 focus:ring-college-gold outline-none"
+                    />
+                  </div>
+                </div>
+
+                {metricsSaved && (
+                  <div className="p-3 bg-emerald-50 border border-emerald-200 rounded text-xs text-emerald-800 flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Participation metrics successfully saved and updated on the Home Page!</span>
+                  </div>
+                )}
+
+                <div className="flex justify-end pt-2 border-t">
+                  <button
+                    type="submit"
+                    className="bg-college-navy hover:bg-college-blue text-white px-6 py-2.5 rounded text-xs font-bold shadow-md transition-colors border border-college-gold/30 flex items-center gap-2"
+                  >
+                    <Sparkles className="w-4 h-4 text-college-gold" />
+                    <span>Save & Update Home Page Metrics</span>
+                  </button>
+                </div>
+              </form>
             </div>
           )}
 

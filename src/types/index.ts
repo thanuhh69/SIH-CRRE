@@ -114,7 +114,16 @@ export interface SamplePPTResource {
   storagePath: string;
   fileSize: number;
   uploadedAt: string;
-  uploadedBy: string;
-  version: string;
+  uploadedBy?: string;
+  version: string; // e.g. "1.0", "1.1"
   published: boolean;
+}
+
+export interface ParticipationMetrics {
+  teamsParticipated: string;
+  studentsInvolved: string;
+  innovativeSolutions: string;
+  sihAlumni: string;
+  updatedAt?: string;
+  updatedBy?: string;
 }
