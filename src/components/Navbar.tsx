@@ -70,8 +70,17 @@ export default function Navbar() {
           <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white p-0.5 flex items-center justify-center border-2 border-college-gold shadow-md shrink-0 overflow-hidden group-hover:scale-105 transition-transform">
             <img
               src="/college-logo.png"
-              alt="Sir C. R. Reddy College of Engineering Official Logo"
-              className="w-full h-full object-contain rounded-full"
+              alt="Sir C. R. Reddy College of Engineering Official Crest Emblem"
+              className="w-full h-full object-contain"
+            />
+          </div>
+
+          {/* Official SIH Lightbulb Emblem */}
+          <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-slate-900 p-0.5 flex items-center justify-center border-2 border-college-gold shadow-md shrink-0 overflow-hidden group-hover:scale-105 transition-transform">
+            <img
+              src="/sih-logo.png"
+              alt="Smart India Hackathon Official SIH Emblem"
+              className="w-full h-full object-contain"
             />
           </div>
           <div>

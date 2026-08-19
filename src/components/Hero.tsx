@@ -100,7 +100,13 @@ export default function Hero() {
                 <Sparkles className="w-3 h-3 text-college-gold animate-pulse" />
                 <span>OFFICIAL SIH 2026 EMBLEM</span>
               </div>
-              <SihLogo className="w-full h-80 my-2" />
+              <div className="w-full flex items-center justify-center gap-4 my-3 pt-6">
+                <img
+                  src="/sih-logo.png"
+                  alt="Official SIH Lightbulb Logo"
+                  className="h-64 object-contain filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] hover:scale-105 transition-transform"
+                />
+              </div>
               <div className="text-center text-[11px] text-slate-300 font-serif font-bold tracking-wide mt-2">
                 Sir C.R. Reddy College of Engineering (Autonomous)
               </div>
