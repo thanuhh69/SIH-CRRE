@@ -66,12 +66,12 @@ export default function Navbar() {
       {/* Main College Header Banner */}
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-3.5 group">
-          {/* Official SIH & College Emblem Logo */}
-          <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-slate-900 p-1 flex items-center justify-center border-2 border-college-gold shadow-md shrink-0 overflow-hidden group-hover:scale-105 transition-transform">
+          {/* Official College Logo Emblem */}
+          <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white p-0.5 flex items-center justify-center border-2 border-college-gold shadow-md shrink-0 overflow-hidden group-hover:scale-105 transition-transform">
             <img
-              src="/sih-logo.png"
-              alt="Sir C. R. Reddy College of Engineering SIH Official Logo"
-              className="w-full h-full object-contain"
+              src="/college-logo.png"
+              alt="Sir C. R. Reddy College of Engineering Official Logo"
+              className="w-full h-full object-contain rounded-full"
             />
           </div>
           <div>
