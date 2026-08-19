@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { createRegistration, getProblemStatements } from '@/lib/firestore';
-import { ProblemStatement, TeamMember, TeamRegistration } from '@/types';
+import { createRegistration, getProblemStatements, subscribeSamplePPT } from '@/lib/firestore';
+import { ProblemStatement, TeamMember, TeamRegistration, SamplePPTResource } from '@/types';
 import { 
   CheckCircle2, 
   Users, 
@@ -17,7 +16,9 @@ import {
   Printer, 
   Sparkles, 
   ShieldCheck,
-  AlertCircle
+  AlertCircle,
+  Download,
+  FileText
 } from 'lucide-react';
 import PptUploadSection from '@/components/PptUploadSection';
 import confetti from 'canvas-confetti';
@@ -38,6 +39,7 @@ export default function RegistrationForm() {
   const [problemStatements, setProblemStatements] = useState<ProblemStatement[]>([]);
   const [loading, setLoading] = useState(false);
   const [submittedRegistration, setSubmittedRegistration] = useState<TeamRegistration | null>(null);
+  const [samplePPT, setSamplePPT] = useState<SamplePPTResource | null>(null);
 
   // Form State
   const [teamName, setTeamName] = useState('');
@@ -63,6 +65,11 @@ export default function RegistrationForm() {
       setProblemStatements(data);
       if (data.length > 0) setSelectedPsId(data[0].psId);
     });
+
+    const unsubscribe = subscribeSamplePPT((ppt) => {
+      setSamplePPT(ppt);
+    });
+    return () => unsubscribe();
   }, []);
 
   const handleAddMember = () => {
@@ -265,6 +272,50 @@ export default function RegistrationForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-8">
+        
+        {/* OFFICIAL PRESENTATION TEMPLATE BANNER */}
+        <div className="bg-gradient-to-r from-college-navy via-slate-900 to-college-blue text-white p-5 rounded-lg border-2 border-college-gold/40 shadow-md">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-college-gold text-xs font-bold font-mono uppercase tracking-wider">
+                <FileText className="w-4 h-4" /> OFFICIAL PRESENTATION TEMPLATE
+              </div>
+              <p className="text-xs text-slate-200">
+                Download the official SIH Internal Hackathon presentation template before preparing your team presentation.
+              </p>
+              {samplePPT && samplePPT.published ? (
+                <div className="flex items-center gap-3 text-[11px] font-mono text-slate-300 pt-1">
+                  <span><strong>Latest Version:</strong> {samplePPT.version}</span>
+                  <span>•</span>
+                  <span className="truncate max-w-[200px]"><strong>File:</strong> {samplePPT.fileName}</span>
+                  {samplePPT.uploadedAt && (
+                    <>
+                      <span>•</span>
+                      <span><strong>Updated:</strong> {new Date(samplePPT.uploadedAt).toLocaleDateString()}</span>
+                    </>
+                  )}
+                </div>
+              ) : null}
+            </div>
+
+            {samplePPT && samplePPT.published ? (
+              <a
+                href={samplePPT.downloadURL}
+                download={samplePPT.fileName}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shrink-0 inline-flex items-center gap-2 bg-college-gold hover:bg-college-goldLight text-college-dark px-4 py-2.5 rounded font-bold text-xs shadow-md transition-all border border-amber-300 hover:scale-105"
+              >
+                <Download className="w-4 h-4" />
+                <span>📥 DOWNLOAD SAMPLE PPT</span>
+              </a>
+            ) : (
+              <div className="shrink-0 bg-slate-800 text-slate-400 px-4 py-2.5 rounded text-xs font-mono border border-slate-700">
+                Sample PPT Currently Unavailable
+              </div>
+            )}
+          </div>
+        </div>
         
         {/* Section 1: Team & Leader Basic Info */}
         <div className="space-y-4">

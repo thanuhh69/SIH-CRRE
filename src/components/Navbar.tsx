@@ -29,6 +29,7 @@ export default function Navbar() {
     { name: 'OUR SIH JOURNEY', href: '/#journey' },
     { name: 'ALUMNI', href: '/alumni' },
     { name: 'PROBLEM STATEMENTS', href: '/problems' },
+    { name: 'RESULTS', href: '/results' },
     { name: 'GUIDELINES', href: '/guidelines' },
     { name: 'REGISTER', href: '/register' },
   ];

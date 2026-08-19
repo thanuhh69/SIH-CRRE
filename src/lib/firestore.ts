@@ -2,11 +2,13 @@ import {
   collection, 
   doc, 
   getDocs, 
+  getDoc,
   setDoc, 
   updateDoc, 
   deleteDoc, 
   query, 
-  orderBy 
+  orderBy,
+  onSnapshot 
 } from 'firebase/firestore';
 import { db } from './firebase';
 import { 
@@ -15,7 +17,10 @@ import {
   ProblemStatement, 
   EventDate, 
   VideoItem, 
-  Announcement 
+  Announcement,
+  ResultItem,
+  ResultsConfig,
+  SamplePPTResource
 } from '@/types';
 import { 
   ALUMNI_DATA, 
@@ -313,3 +318,291 @@ export const getMainVideo = async (): Promise<VideoItem> => {
 export const saveMainVideo = async (video: VideoItem): Promise<void> => {
   setLocalData('video_main', video);
 };
+
+// ==========================================
+// RESULTS & RESULTS CONFIG API
+// ==========================================
+
+const INITIAL_RESULTS: ResultItem[] = [
+  {
+    id: 'SIH-2026-1001',
+    teamId: 'SIH-2026-1001',
+    teamName: 'InnovateX CRR',
+    problemStatement: 'AI-Driven Smart Water Quality Monitoring',
+    problemStatementId: 'SIH1284',
+    branch: 'Computer Science & Engineering',
+    score: 95.5,
+    rank: 1,
+    status: 'Winner',
+    remarks: 'Outstanding IoT hardware prototype and real-time dashboard implementation.',
+    members: [
+      { name: 'K. Sai Teja', email: 'saiteja@sircrrcoestd.in', phone: '9876543210', rollNumber: '21B91A0501', department: 'CSE', year: '4th Year', isLeader: true },
+      { name: 'P. Anusha', email: 'anusha@sircrrcoestd.in', phone: '9876543211', rollNumber: '21B91A0502', department: 'CSE', year: '4th Year' }
+    ],
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: 'SIH-2026-1002',
+    teamId: 'SIH-2026-1002',
+    teamName: 'CyberShields CRR',
+    problemStatement: 'Automated Vulnerability Detection in Government Web Portals',
+    problemStatementId: 'SIH1290',
+    branch: 'Information Technology',
+    score: 92.0,
+    rank: 2,
+    status: 'Runner-up',
+    remarks: 'Excellent security audit framework and automated zero-day exploit scanner.',
+    members: [
+      { name: 'M. Rahul', email: 'rahul@sircrrcoestd.in', phone: '9876543212', rollNumber: '21B91A1205', department: 'IT', year: '4th Year', isLeader: true }
+    ],
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: 'SIH-2026-1003',
+    teamId: 'SIH-2026-1003',
+    teamName: 'AgriTech Innovators',
+    problemStatement: 'Smart Crop Disease Identification using Drone Imaging',
+    problemStatementId: 'SIH1305',
+    branch: 'Electronics & Communication Engineering',
+    score: 89.5,
+    rank: 3,
+    status: 'Finalist',
+    remarks: 'High accuracy AI model running on edge microcontrollers for offline farming.',
+    members: [
+      { name: 'V. Divya', email: 'divya@sircrrcoestd.in', phone: '9876543213', rollNumber: '22B91A0410', department: 'ECE', year: '3rd Year', isLeader: true }
+    ],
+    updatedAt: new Date().toISOString()
+  }
+];
+
+const INITIAL_RESULTS_CONFIG: ResultsConfig = {
+  published: false,
+  publishedAt: undefined,
+  publishedBy: undefined
+};
+
+export const getResults = async (): Promise<ResultItem[]> => {
+  if (isFirebaseConfigured()) {
+    try {
+      const q = query(collection(db, 'results'), orderBy('rank', 'asc'));
+      const snapshot = await getDocs(q);
+      if (!snapshot.empty) {
+        return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as ResultItem));
+      }
+    } catch (err) {
+      console.warn('Firestore results query failed, using local store:', err);
+    }
+  }
+  return getLocalData('results', INITIAL_RESULTS);
+};
+
+export const saveResult = async (result: ResultItem): Promise<void> => {
+  const updatedResult = { ...result, updatedAt: new Date().toISOString() };
+  if (isFirebaseConfigured()) {
+    try {
+      await setDoc(doc(db, 'results', result.id), updatedResult);
+    } catch (err) {
+      console.error('Firestore saveResult error:', err);
+    }
+  }
+  const current = getLocalData('results', INITIAL_RESULTS);
+  const idx = current.findIndex(r => r.id === result.id);
+  let updated: ResultItem[];
+  if (idx >= 0) {
+    updated = [...current];
+    updated[idx] = updatedResult;
+  } else {
+    updated = [...current, updatedResult];
+  }
+  setLocalData('results', updated);
+};
+
+export const deleteResult = async (id: string): Promise<void> => {
+  if (isFirebaseConfigured()) {
+    try {
+      await deleteDoc(doc(db, 'results', id));
+    } catch (err) {
+      console.error('Firestore deleteResult error:', err);
+    }
+  }
+  const current = getLocalData('results', INITIAL_RESULTS);
+  const updated = current.filter(r => r.id !== id);
+  setLocalData('results', updated);
+};
+
+export const getResultsConfig = async (): Promise<ResultsConfig> => {
+  if (isFirebaseConfigured()) {
+    try {
+      const docSnap = await getDoc(doc(db, 'resultsConfig', 'main'));
+      if (docSnap.exists()) {
+        return docSnap.data() as ResultsConfig;
+      }
+    } catch (err) {
+      console.warn('Firestore getResultsConfig failed, using fallback:', err);
+    }
+  }
+  return getLocalData('resultsConfig', INITIAL_RESULTS_CONFIG);
+};
+
+export const updateResultsConfig = async (config: ResultsConfig): Promise<void> => {
+  if (isFirebaseConfigured()) {
+    try {
+      await setDoc(doc(db, 'resultsConfig', 'main'), config);
+    } catch (err) {
+      console.error('Firestore updateResultsConfig error:', err);
+    }
+  }
+  setLocalData('resultsConfig', config);
+};
+
+// Real-time listener for public results configuration
+export const subscribeResultsConfig = (callback: (config: ResultsConfig) => void) => {
+  if (isFirebaseConfigured()) {
+    try {
+      return onSnapshot(doc(db, 'resultsConfig', 'main'), (docSnap) => {
+        if (docSnap.exists()) {
+          callback(docSnap.data() as ResultsConfig);
+        } else {
+          callback(getLocalData('resultsConfig', INITIAL_RESULTS_CONFIG));
+        }
+      });
+    } catch (err) {
+      console.warn('Firestore real-time subscription failed, using polling fallback:', err);
+    }
+  }
+  
+  // Fallback: initial call + storage event listener
+  callback(getLocalData('resultsConfig', INITIAL_RESULTS_CONFIG));
+  const handleStorage = (e: StorageEvent) => {
+    if (e.key === 'sih_2026_resultsConfig') {
+      callback(getLocalData('resultsConfig', INITIAL_RESULTS_CONFIG));
+    }
+  };
+  if (typeof window !== 'undefined') {
+    window.addEventListener('storage', handleStorage);
+  }
+  return () => {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('storage', handleStorage);
+    }
+  };
+};
+
+// Real-time listener for results items
+export const subscribeResults = (callback: (results: ResultItem[]) => void) => {
+  if (isFirebaseConfigured()) {
+    try {
+      const q = query(collection(db, 'results'), orderBy('rank', 'asc'));
+      return onSnapshot(q, (snapshot) => {
+        if (!snapshot.empty) {
+          const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as ResultItem));
+          callback(list);
+        } else {
+          callback(getLocalData('results', INITIAL_RESULTS));
+        }
+      });
+    } catch (err) {
+      console.warn('Firestore real-time results subscription failed:', err);
+    }
+  }
+
+  callback(getLocalData('results', INITIAL_RESULTS));
+  const handleStorage = (e: StorageEvent) => {
+    if (e.key === 'sih_2026_results') {
+      callback(getLocalData('results', INITIAL_RESULTS));
+    }
+  };
+  if (typeof window !== 'undefined') {
+    window.addEventListener('storage', handleStorage);
+  }
+  return () => {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('storage', handleStorage);
+    }
+  };
+};
+
+// ==========================================
+// SAMPLE PPT RESOURCE MANAGEMENT API
+// ==========================================
+
+const INITIAL_SAMPLE_PPT: SamplePPTResource = {
+  fileName: 'SIH_Internal_Hackathon_PPT_Template.pptx',
+  downloadURL: '/templates/SIH_Internal_Hackathon_PPT_Template.pptx',
+  storagePath: 'resources/sample-ppt/SIH_Internal_Hackathon_PPT_Template.pptx',
+  fileSize: 2457600, // ~2.4 MB
+  uploadedAt: new Date().toISOString(),
+  uploadedBy: 'Admin Committee',
+  version: '1.0',
+  published: true
+};
+
+export const getSamplePPT = async (): Promise<SamplePPTResource | null> => {
+  if (isFirebaseConfigured()) {
+    try {
+      const docSnap = await getDoc(doc(db, 'resources', 'samplePPT'));
+      if (docSnap.exists()) {
+        return docSnap.data() as SamplePPTResource;
+      }
+    } catch (err) {
+      console.warn('Firestore getSamplePPT error:', err);
+    }
+  }
+  return getLocalData('samplePPT', INITIAL_SAMPLE_PPT);
+};
+
+export const saveSamplePPT = async (pptData: SamplePPTResource): Promise<void> => {
+  if (isFirebaseConfigured()) {
+    try {
+      await setDoc(doc(db, 'resources', 'samplePPT'), pptData);
+    } catch (err) {
+      console.error('Firestore saveSamplePPT error:', err);
+    }
+  }
+  setLocalData('samplePPT', pptData);
+};
+
+export const deleteSamplePPT = async (): Promise<void> => {
+  if (isFirebaseConfigured()) {
+    try {
+      await deleteDoc(doc(db, 'resources', 'samplePPT'));
+    } catch (err) {
+      console.error('Firestore deleteSamplePPT error:', err);
+    }
+  }
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('sih_2026_samplePPT');
+  }
+};
+
+export const subscribeSamplePPT = (callback: (ppt: SamplePPTResource | null) => void) => {
+  if (isFirebaseConfigured()) {
+    try {
+      return onSnapshot(doc(db, 'resources', 'samplePPT'), (docSnap) => {
+        if (docSnap.exists()) {
+          callback(docSnap.data() as SamplePPTResource);
+        } else {
+          callback(getLocalData('samplePPT', INITIAL_SAMPLE_PPT));
+        }
+      });
+    } catch (err) {
+      console.warn('Firestore samplePPT real-time listener error:', err);
+    }
+  }
+
+  callback(getLocalData('samplePPT', INITIAL_SAMPLE_PPT));
+  const handleStorage = (e: StorageEvent) => {
+    if (e.key === 'sih_2026_samplePPT') {
+      callback(getLocalData('samplePPT', INITIAL_SAMPLE_PPT));
+    }
+  };
+  if (typeof window !== 'undefined') {
+    window.addEventListener('storage', handleStorage);
+  }
+  return () => {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('storage', handleStorage);
+    }
+  };
+};
+

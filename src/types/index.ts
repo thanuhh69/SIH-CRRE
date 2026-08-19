@@ -85,3 +85,36 @@ export interface Announcement {
   isUrgent: boolean;
   active: boolean;
 }
+
+export interface ResultItem {
+  id: string; // Team ID e.g. SIH-2026-1001
+  teamId: string;
+  teamName: string;
+  problemStatement: string;
+  problemStatementId?: string;
+  branch: string; // Department
+  score: number;
+  rank: number;
+  status: 'Winner' | 'Runner-up' | 'Finalist' | 'Qualified' | 'Not Qualified';
+  remarks?: string;
+  members: TeamMember[];
+  updatedAt: string;
+  updatedBy?: string;
+}
+
+export interface ResultsConfig {
+  published: boolean;
+  publishedAt?: string;
+  publishedBy?: string;
+}
+
+export interface SamplePPTResource {
+  fileName: string;
+  downloadURL: string;
+  storagePath: string;
+  fileSize: number;
+  uploadedAt: string;
+  uploadedBy: string;
+  version: string;
+  published: boolean;
+}

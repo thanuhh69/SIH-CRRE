@@ -3,7 +3,7 @@ import { storage } from './firebase';
 
 export const uploadFileWithFallback = async (
   file: File, 
-  folder: 'alumni' | 'videos' | 'registration-files'
+  folder: 'alumni' | 'videos' | 'registration-files' | 'resources'
 ): Promise<string> => {
   const isFirebaseConfigured =
     process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID &&
@@ -28,3 +28,4 @@ export const uploadFileWithFallback = async (
     reader.readAsDataURL(file);
   });
 };
+
