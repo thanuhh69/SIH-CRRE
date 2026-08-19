@@ -81,7 +81,8 @@ import {
   AlertTriangle,
   Mail,
   RefreshCw,
-  Award
+  Award,
+  Sparkles
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
