@@ -115,7 +115,7 @@ export default function PublicResultsPage() {
       head: [['Rank', 'Team ID', 'Team Name', 'Department / Branch', 'Problem Statement', 'Score', 'Status']],
       body: winnersData,
       theme: 'grid',
-      headStyles: { fillStyle: 'F', fillColor: [197, 155, 39], textColor: [15, 23, 42], fontStyle: 'bold' },
+      headStyles: { fillColor: [197, 155, 39], textColor: [15, 23, 42], fontStyle: 'bold' },
       styles: { fontSize: 9, cellPadding: 3 },
     });
 
