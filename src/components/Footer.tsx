@@ -12,11 +12,11 @@ export default function Footer() {
         {/* Col 1: Institutional Info */}
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-full bg-white p-0.5 flex items-center justify-center border border-college-gold shrink-0 overflow-hidden">
+            <div className="w-11 h-11 rounded-full bg-[#084ca3] flex items-center justify-center border border-college-gold shrink-0 overflow-hidden">
               <img
                 src="/college-logo.png"
                 alt="Sir C. R. Reddy College of Engineering Official Crest"
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover scale-110"
               />
             </div>
             <div>

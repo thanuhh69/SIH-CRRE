@@ -67,11 +67,11 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-3.5 group">
           {/* Official College Logo Emblem */}
-          <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white p-0.5 flex items-center justify-center border-2 border-college-gold shadow-md shrink-0 overflow-hidden group-hover:scale-105 transition-transform">
+          <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-[#084ca3] flex items-center justify-center border-2 border-college-gold shadow-md shrink-0 overflow-hidden group-hover:scale-105 transition-transform">
             <img
               src="/college-logo.png"
               alt="Sir C. R. Reddy College of Engineering Official Crest Emblem"
-              className="w-full h-full object-contain"
+              className="w-full h-full object-cover scale-110"
             />
           </div>
           <div>
