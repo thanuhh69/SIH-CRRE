@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useState, useEffect } from 'react';
 import { createRegistration, getProblemStatements, subscribeSamplePPT } from '@/lib/firestore';
 import { ProblemStatement, TeamMember, TeamRegistration, SamplePPTResource } from '@/types';
 import { 
