@@ -11,6 +11,7 @@ import Timeline from '@/components/Timeline';
 import ImportantDates from '@/components/ImportantDates';
 import PrizeMoneySection from '@/components/PrizeMoneySection';
 
+// SIH 2026 Internal Hackathon Homepage
 export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
