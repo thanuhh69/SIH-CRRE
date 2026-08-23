@@ -106,31 +106,15 @@ export default function Navbar() {
           <nav className="hidden lg:flex items-center">
             {navLinks.map((link) => {
               const active = isActive(link.href);
-              const className = `px-3.5 py-3 text-xs font-semibold tracking-wider transition-colors border-b-2 ${
-                active
-                  ? 'border-college-gold text-white bg-college-blue/50'
-                  : 'border-transparent text-slate-200 hover:text-white hover:bg-college-blue/30 hover:border-college-gold/50'
-              }`;
-
-              if (link.isExternal) {
-                return (
-                  <a
-                    key={link.name}
-                    href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={className}
-                  >
-                    {link.name} ↗
-                  </a>
-                );
-              }
-
               return (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={className}
+                  className={`px-3.5 py-3 text-xs font-semibold tracking-wider transition-colors border-b-2 ${
+                    active
+                      ? 'border-college-gold text-white bg-college-blue/50'
+                      : 'border-transparent text-slate-200 hover:text-white hover:bg-college-blue/30 hover:border-college-gold/50'
+                  }`}
                 >
                   {link.name}
                 </Link>
@@ -158,33 +142,16 @@ export default function Navbar() {
         <div className="lg:hidden bg-college-dark text-white border-b border-college-navy px-4 pt-2 pb-6 space-y-1">
           {navLinks.map((link) => {
             const active = isActive(link.href);
-            const className = `block px-3 py-2.5 rounded text-xs font-bold tracking-wider ${
-              active
-                ? 'bg-college-blue text-college-gold border-l-4 border-college-gold'
-                : 'text-slate-200 hover:bg-college-navy hover:text-white'
-            }`;
-
-            if (link.isExternal) {
-              return (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={className}
-                >
-                  {link.name} ↗
-                </a>
-              );
-            }
-
             return (
               <Link
                 key={link.name}
                 href={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={className}
+                className={`block px-3 py-2.5 rounded text-xs font-bold tracking-wider ${
+                  active
+                    ? 'bg-college-blue text-college-gold border-l-4 border-college-gold'
+                    : 'text-slate-200 hover:bg-college-navy hover:text-white'
+                }`}
               >
                 {link.name}
               </Link>
