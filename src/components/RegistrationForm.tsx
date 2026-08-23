@@ -52,8 +52,8 @@ export default function RegistrationForm() {
   const [leaderRollNumber, setLeaderRollNumber] = useState('');
   const [department, setDepartment] = useState(DEPARTMENTS[0]);
   const [year, setYear] = useState(YEARS[2]);
-  const [selectedPsId, setSelectedPsId] = useState('SIH1284');
-  const [psTitle, setPsTitle] = useState('AI-Driven Smart Water Quality Monitoring');
+  const [selectedPsId, setSelectedPsId] = useState('');
+  const [psTitle, setPsTitle] = useState('');
   const [facultyMentor, setFacultyMentor] = useState('');
 
   // PPT Upload State
