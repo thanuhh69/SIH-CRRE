@@ -9,7 +9,6 @@ import AlumniCarousel from '@/components/AlumniCarousel';
 import WhyParticipate from '@/components/WhyParticipate';
 import Timeline from '@/components/Timeline';
 import ImportantDates from '@/components/ImportantDates';
-import ProblemStatementsPreview from '@/components/ProblemStatementsPreview';
 import PrizeMoneySection from '@/components/PrizeMoneySection';
 
 export default function HomePage() {
@@ -27,7 +26,6 @@ export default function HomePage() {
         <WhyParticipate />
         <Timeline />
         <ImportantDates />
-        <ProblemStatementsPreview />
       </main>
 
       <Footer />

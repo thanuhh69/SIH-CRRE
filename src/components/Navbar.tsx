@@ -28,7 +28,6 @@ export default function Navbar() {
     { name: 'ABOUT SIH', href: '/about' },
     { name: 'OUR SIH JOURNEY', href: '/#journey' },
     { name: 'ALUMNI', href: '/alumni' },
-    { name: 'PROBLEM STATEMENTS', href: 'https://sih.gov.in/sih2026PS', isExternal: true },
     { name: 'RESULTS', href: '/results' },
     { name: 'GUIDELINES', href: '/guidelines' },
     { name: 'REGISTER', href: '/register' },

@@ -9,6 +9,20 @@ const nextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/problems',
+        destination: 'https://sih.gov.in/sih2026PS',
+        permanent: false,
+      },
+      {
+        source: '/problem-statements',
+        destination: 'https://sih.gov.in/sih2026PS',
+        permanent: false,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

@@ -45,7 +45,6 @@ export default function Footer() {
               { name: 'Home', href: '/' },
               { name: 'About SIH', href: '/about' },
               { name: 'SIH Alumni Showcase', href: '/alumni' },
-              { name: 'Official Problem Statements ↗', href: 'https://sih.gov.in/sih2026PS', isExternal: true },
               { name: 'Guidelines & Instructions', href: '/guidelines' },
               { name: 'Team Registration', href: '/register' },
               { name: 'Admin Portal', href: '/admin' },

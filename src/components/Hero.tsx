@@ -2,9 +2,8 @@
 
 import React from 'react';
 import Link from 'next/link';
-import SihLogo from '@/components/SihLogo';
-import { ArrowRight, Shield, Lightbulb, Users, Award, ChevronRight, Sparkles } from 'lucide-react';
-import { HERO_DATA } from '@/data/placeholder';
+import { ArrowRight, Shield, Lightbulb, Users, Award, ChevronRight, ExternalLink, Calendar, Sparkles } from 'lucide-react';
+import { HERO_DATA, OFFICIAL_SIH_PORTAL_URL } from '@/data/placeholder';
 
 export default function Hero() {
   return (
@@ -29,44 +28,62 @@ export default function Hero() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           {/* Left Column: Hero Content */}
-          <div className="lg:col-span-7 text-center md:text-left space-y-5">
+          <div className="lg:col-span-7 text-center md:text-left space-y-6">
             <div>
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-3">
-                <div className="inline-block font-mono text-xs md:text-sm font-bold text-college-gold uppercase tracking-widest bg-college-gold/10 px-3 py-1 rounded border border-college-gold/30">
-                  {HERO_DATA.subtitle}
-                </div>
-                <div className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-amber-300 bg-amber-500/20 px-3 py-1 rounded border border-amber-400/40">
-                  <span>📅 15th & 16th September 2026</span>
-                </div>
-                <div className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-emerald-300 bg-emerald-500/20 px-3 py-1 rounded border border-emerald-400/40">
-                  <span>🏆 Total Prizes: ₹44,000</span>
-                </div>
+              <div className="inline-block font-mono text-xs md:text-sm font-bold text-college-gold uppercase tracking-widest bg-college-gold/10 px-3 py-1 rounded border border-college-gold/30 mb-3">
+                SIH INTERNAL HACKATHON
               </div>
               <h1 className="font-serif font-extrabold text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white tracking-tight leading-tight">
-                {HERO_DATA.title}
+                SMART INDIA<br className="hidden sm:inline" /> HACKATHON 2026
               </h1>
+              
+              {/* Prominent Event Dates Highlight */}
+              <div className="mt-4 inline-flex items-center gap-2.5 bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-amber-500/20 border-2 border-college-gold px-4 py-2 rounded-xl text-amber-300 shadow-md">
+                <Calendar className="w-5 h-5 text-college-gold shrink-0" />
+                <div className="text-left font-mono">
+                  <span className="text-[10px] text-college-gold uppercase font-bold tracking-wider block">INTERNAL HACKATHON DATES</span>
+                  <span className="font-serif font-bold text-sm sm:text-base text-white">📅 15th & 16th September 2026</span>
+                </div>
+              </div>
             </div>
 
-            <p className="text-slate-200 text-sm sm:text-base leading-relaxed max-w-2xl font-light">
-              "{HERO_DATA.tagline}"
+            <p className="text-slate-200 text-sm sm:text-base leading-relaxed max-w-2xl font-light italic">
+              "Innovation begins with identifying real-world problems and building meaningful solutions."
             </p>
 
-            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4">
-              <Link
-                href="/register"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-gradient-to-r from-college-gold via-amber-500 to-college-gold text-college-dark px-7 py-3.5 rounded font-bold text-sm shadow-lg hover:brightness-110 transition-all transform hover:-translate-y-0.5 border border-amber-300"
-              >
-                <span>REGISTER YOUR TEAM</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+            {/* Buttons CTA Section */}
+            <div className="pt-2 space-y-3">
+              {/* Row 1: REGISTER YOUR TEAM */}
+              <div>
+                <Link
+                  href="/register"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-gradient-to-r from-college-gold via-amber-500 to-college-gold text-college-dark px-8 py-3.5 rounded font-extrabold text-sm shadow-xl hover:brightness-110 transition-all transform hover:-translate-y-0.5 border border-amber-300"
+                >
+                  <span>REGISTER YOUR TEAM</span>
+                  <ArrowRight className="w-4 h-4 text-college-dark" />
+                </Link>
+              </div>
 
-              <Link
-                href="/#about"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white px-6 py-3.5 rounded font-semibold text-sm border border-white/20 transition-colors"
-              >
-                <span>EXPLORE SIH</span>
-                <ChevronRight className="w-4 h-4 text-college-gold" />
-              </Link>
+              {/* Row 2: EXPLORE SIH & EXPLORE PROBLEM STATEMENTS */}
+              <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3">
+                <Link
+                  href="/#about"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white px-5 py-3 rounded font-semibold text-xs border border-white/20 transition-colors"
+                >
+                  <span>EXPLORE SIH</span>
+                  <ChevronRight className="w-4 h-4 text-college-gold" />
+                </Link>
+
+                <a
+                  href={OFFICIAL_SIH_PORTAL_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-college-navy/90 hover:bg-college-blue text-college-goldLight px-5 py-3 rounded font-semibold text-xs border border-college-gold/40 transition-colors shadow-md hover:border-college-gold"
+                >
+                  <span>EXPLORE PROBLEM STATEMENTS</span>
+                  <ExternalLink className="w-4 h-4 text-college-gold" />
+                </a>
+              </div>
             </div>
 
             {/* Sub-highlights bar */}
