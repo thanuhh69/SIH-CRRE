@@ -50,23 +50,12 @@ export default function Footer() {
               { name: 'Admin Portal', href: '/admin' },
             ].map((link) => (
               <li key={link.name}>
-                {link.isExternal ? (
-                  <a
-                    href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-college-gold transition-colors flex items-center gap-1.5 text-slate-300"
-                  >
-                    <span className="text-college-gold">›</span> {link.name}
-                  </a>
-                ) : (
-                  <Link 
-                    href={link.href}
-                    className="hover:text-white hover:underline transition-colors flex items-center gap-1.5 text-slate-300"
-                  >
-                    <span className="text-college-gold">›</span> {link.name}
-                  </Link>
-                )}
+                <Link 
+                  href={link.href}
+                  className="hover:text-white hover:underline transition-colors flex items-center gap-1.5 text-slate-300"
+                >
+                  <span className="text-college-gold">›</span> {link.name}
+                </Link>
               </li>
             ))}
           </ul>
