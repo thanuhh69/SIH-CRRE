@@ -135,16 +135,21 @@ export default function GuidelinesPage() {
       <main className="flex-grow">
         {/* Banner */}
         <div className="bg-college-dark text-white py-12 border-b-4 border-college-gold">
-          <div className="max-w-7xl mx-auto px-4 text-center">
+          <div className="max-w-7xl mx-auto px-4 text-center space-y-2">
             <span className="text-xs font-mono font-bold text-college-gold tracking-widest uppercase bg-college-gold/10 px-3 py-1 rounded border border-college-gold/30">
               Official Institutional Manual
             </span>
             <h1 className="font-serif font-extrabold text-3xl sm:text-4xl text-white mt-3">
               SIH 2026 Hackathon Guidelines
             </h1>
-            <p className="text-slate-300 text-xs sm:text-sm max-w-2xl mx-auto mt-2">
-              Comprehensive rules, evaluation parameters, team formation criteria, and submission specifications.
-            </p>
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
+              <span className="text-xs font-mono font-bold text-amber-300 bg-amber-500/20 px-3 py-1 rounded border border-amber-400/40">
+                📅 Event Dates: 15th & 16th September 2026
+              </span>
+              <span className="text-xs font-mono font-bold text-emerald-300 bg-emerald-500/20 px-3 py-1 rounded border border-emerald-400/40">
+                🏆 Total Prize Pool: ₹44,000
+              </span>
+            </div>
           </div>
         </div>
 

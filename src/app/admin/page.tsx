@@ -452,7 +452,7 @@ export default function AdminDashboardPage() {
     const newEvt: EventDate = {
       id: editingEvent.id || `EVT-${Date.now()}`,
       title: editingEvent.title || '',
-      date: editingEvent.date || 'TBA 2026',
+      date: editingEvent.date || '15th & 16th September 2026',
       location: editingEvent.location || 'Sir C.R. Reddy CoE Campus',
       isTBD: editingEvent.isTBD || false,
       status: editingEvent.status || 'Upcoming',

@@ -31,8 +31,16 @@ export default function Hero() {
           {/* Left Column: Hero Content */}
           <div className="lg:col-span-7 text-center md:text-left space-y-5">
             <div>
-              <div className="inline-block font-mono text-xs md:text-sm font-bold text-college-gold uppercase tracking-widest bg-college-gold/10 px-3 py-1 rounded border border-college-gold/30 mb-3">
-                {HERO_DATA.subtitle}
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-3">
+                <div className="inline-block font-mono text-xs md:text-sm font-bold text-college-gold uppercase tracking-widest bg-college-gold/10 px-3 py-1 rounded border border-college-gold/30">
+                  {HERO_DATA.subtitle}
+                </div>
+                <div className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-amber-300 bg-amber-500/20 px-3 py-1 rounded border border-amber-400/40">
+                  <span>📅 15th & 16th September 2026</span>
+                </div>
+                <div className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-emerald-300 bg-emerald-500/20 px-3 py-1 rounded border border-emerald-400/40">
+                  <span>🏆 Total Prizes: ₹44,000</span>
+                </div>
               </div>
               <h1 className="font-serif font-extrabold text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white tracking-tight leading-tight">
                 {HERO_DATA.title}

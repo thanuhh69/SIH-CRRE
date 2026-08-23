@@ -13,7 +13,7 @@ export const HERO_DATA = {
 export const ANNOUNCEMENTS_DATA: Announcement[] = [
   {
     id: 'ann-1',
-    title: '📢 SIH Internal Hackathon 2026 team registrations are now open. Deadline to apply will be announced soon.',
+    title: '📢 SIH Internal Hackathon 2026 will be held on 15th & 16th September 2026. Team registrations are now open!',
     date: '2026-08-10',
     link: '/register',
     tag: 'Notice',
@@ -22,19 +22,19 @@ export const ANNOUNCEMENTS_DATA: Announcement[] = [
   },
   {
     id: 'ann-2',
-    title: '💡 Problem Statements catalog updated. Explore domain challenges from various Ministries & Industries.',
+    title: '💡 View Official SIH 2026 Problem Statements directly on the national Smart India Hackathon portal.',
     date: '2026-08-08',
-    link: '/problems',
+    link: 'https://sih.gov.in/sih2026PS',
     tag: 'Important',
     isUrgent: false,
     active: true,
   },
   {
     id: 'ann-3',
-    title: '📌 Internal Hackathon briefing session for registered team leaders - Date: TBD.',
+    title: '🏆 Total Prize Pool of ₹44,000 announced for Software and Hardware internal hackathon winners!',
     date: '2026-08-05',
-    link: '/guidelines',
-    tag: 'Schedule',
+    link: '/register',
+    tag: 'Important',
     isUrgent: false,
     active: true,
   },
@@ -118,50 +118,57 @@ export const VIDEO_DATA: VideoItem = {
   uploadedAt: '2026-08-01',
 };
 
+export const OFFICIAL_SIH_PORTAL_URL = 'https://sih.gov.in/sih2026PS';
+
+export const PRIZE_DATA = {
+  totalPool: '₹44,000',
+  software: [
+    { rank: '1st Place', amount: '₹10,000', medal: '🥇' },
+    { rank: '2nd Place', amount: '₹7,000', medal: '🥈' },
+    { rank: '3rd Place', amount: '₹5,000', medal: '🥉' },
+  ],
+  hardware: [
+    { rank: '1st Place', amount: '₹10,000', medal: '🥇' },
+    { rank: '2nd Place', amount: '₹7,000', medal: '🥈' },
+    { rank: '3rd Place', amount: '₹5,000', medal: '🥉' },
+  ],
+};
+
 export const IMPORTANT_DATES_DATA: EventDate[] = [
   {
     id: 'evt-1',
     title: 'Registration Opens',
-    date: 'TBD',
+    date: '1st September 2026',
     location: 'Online Portal',
-    isTBD: true,
-    status: 'TBD',
+    isTBD: false,
+    status: 'Active',
     category: 'Registration',
   },
   {
     id: 'evt-2',
-    title: 'Registration Closes',
-    date: 'TBD',
+    title: 'Registration & Abstract Deadline',
+    date: '12th September 2026',
     location: 'Online Portal',
-    isTBD: true,
-    status: 'TBD',
+    isTBD: false,
+    status: 'Upcoming',
     category: 'Registration',
   },
   {
     id: 'evt-3',
-    title: 'Idea Abstract Submission',
-    date: 'TBD',
-    location: 'Internal SIH Portal',
-    isTBD: true,
-    status: 'TBD',
-    category: 'Submission',
-  },
-  {
-    id: 'evt-4',
-    title: 'Internal Hackathon Evaluation',
-    date: 'TBD',
-    location: 'College Campus (Auditorium)',
-    isTBD: true,
-    status: 'TBD',
+    title: 'SIH Internal Hackathon 2026',
+    date: '15th & 16th September 2026',
+    location: 'College Campus (Auditorium & Labs)',
+    isTBD: false,
+    status: 'Upcoming',
     category: 'Internal Hackathon',
   },
   {
-    id: 'evt-5',
+    id: 'evt-4',
     title: 'Results Announcement & SIH Nomination',
-    date: 'TBD',
+    date: '18th September 2026',
     location: 'College Notice Board & Website',
-    isTBD: true,
-    status: 'TBD',
+    isTBD: false,
+    status: 'Upcoming',
     category: 'Results',
   },
 ];

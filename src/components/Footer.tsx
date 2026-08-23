@@ -45,18 +45,29 @@ export default function Footer() {
               { name: 'Home', href: '/' },
               { name: 'About SIH', href: '/about' },
               { name: 'SIH Alumni Showcase', href: '/alumni' },
-              { name: 'Problem Statements 2026', href: '/problems' },
+              { name: 'Official Problem Statements ↗', href: 'https://sih.gov.in/sih2026PS', isExternal: true },
               { name: 'Guidelines & Instructions', href: '/guidelines' },
               { name: 'Team Registration', href: '/register' },
               { name: 'Admin Portal', href: '/admin' },
             ].map((link) => (
               <li key={link.name}>
-                <Link 
-                  href={link.href}
-                  className="hover:text-white hover:underline transition-colors flex items-center gap-1.5 text-slate-300"
-                >
-                  <span className="text-college-gold">›</span> {link.name}
-                </Link>
+                {link.isExternal ? (
+                  <a
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-college-gold transition-colors flex items-center gap-1.5 text-slate-300"
+                  >
+                    <span className="text-college-gold">›</span> {link.name}
+                  </a>
+                ) : (
+                  <Link 
+                    href={link.href}
+                    className="hover:text-white hover:underline transition-colors flex items-center gap-1.5 text-slate-300"
+                  >
+                    <span className="text-college-gold">›</span> {link.name}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>

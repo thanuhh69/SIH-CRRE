@@ -10,6 +10,7 @@ import WhyParticipate from '@/components/WhyParticipate';
 import Timeline from '@/components/Timeline';
 import ImportantDates from '@/components/ImportantDates';
 import ProblemStatementsPreview from '@/components/ProblemStatementsPreview';
+import PrizeMoneySection from '@/components/PrizeMoneySection';
 
 export default function HomePage() {
   return (
@@ -20,6 +21,7 @@ export default function HomePage() {
         <Hero />
         <AnnouncementBar />
         <AboutSection />
+        <PrizeMoneySection />
         <JourneySection />
         <AlumniCarousel />
         <WhyParticipate />

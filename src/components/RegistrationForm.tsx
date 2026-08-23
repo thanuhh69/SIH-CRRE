@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { createRegistration, getProblemStatements, subscribeSamplePPT } from '@/lib/firestore';
 import { ProblemStatement, TeamMember, TeamRegistration, SamplePPTResource } from '@/types';
+import { OFFICIAL_SIH_PORTAL_URL } from '@/data/placeholder';
 import { 
   CheckCircle2, 
   Users, 
@@ -19,7 +20,8 @@ import {
   ShieldCheck,
   AlertCircle,
   Download,
-  FileText
+  FileText,
+  ExternalLink
 } from 'lucide-react';
 import PptUploadSection from '@/components/PptUploadSection';
 import confetti from 'canvas-confetti';
@@ -50,7 +52,8 @@ export default function RegistrationForm() {
   const [leaderRollNumber, setLeaderRollNumber] = useState('');
   const [department, setDepartment] = useState(DEPARTMENTS[0]);
   const [year, setYear] = useState(YEARS[2]);
-  const [selectedPsId, setSelectedPsId] = useState('');
+  const [selectedPsId, setSelectedPsId] = useState('SIH1284');
+  const [psTitle, setPsTitle] = useState('AI-Driven Smart Water Quality Monitoring');
   const [facultyMentor, setFacultyMentor] = useState('');
 
   // PPT Upload State
@@ -111,7 +114,7 @@ export default function RegistrationForm() {
     }
 
     const selectedPs = problemStatements.find(p => p.psId === selectedPsId);
-    const psTitle = selectedPs ? selectedPs.title : 'Selected Problem Statement';
+    const titleToUse = psTitle || (selectedPs ? selectedPs.title : 'Selected Problem Statement');
 
     const fullMembersList: TeamMember[] = [
       {
@@ -144,7 +147,7 @@ export default function RegistrationForm() {
         department,
         year,
         problemStatementId: selectedPsId,
-        problemStatementTitle: psTitle,
+        problemStatementTitle: titleToUse,
         facultyMentor,
         members: fullMembersList,
         pptUrl: uploadedUrl,
@@ -440,27 +443,57 @@ export default function RegistrationForm() {
           </div>
         </div>
 
-        {/* Section 2: Problem Statement Selection */}
+        {/* Section 2: Problem Statement Details & Official Redirect */}
         <div className="space-y-4">
           <h3 className="font-serif font-bold text-base text-college-navy border-b border-slate-200 pb-2 flex items-center gap-2">
             <FileCode className="w-5 h-5 text-college-gold" /> 2. Selected Problem Statement
           </h3>
 
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">
-              Choose Problem Statement <span className="text-red-600">*</span>
-            </label>
-            <select
-              value={selectedPsId}
-              onChange={e => setSelectedPsId(e.target.value)}
-              className="w-full px-3 py-2.5 text-xs border border-slate-300 rounded focus:ring-2 focus:ring-college-navy outline-none bg-white font-medium text-slate-900"
-            >
-              {problemStatements.map(p => (
-                <option key={p.id} value={p.psId}>
-                  [{p.psId}] {p.title} ({p.organization} - {p.category})
-                </option>
-              ))}
-            </select>
+          <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg space-y-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-200 pb-3">
+              <span className="text-xs font-bold text-slate-700">
+                Explore Official Problem Statements:
+              </span>
+              <a
+                href={OFFICIAL_SIH_PORTAL_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 bg-college-navy hover:bg-college-blue text-white px-3.5 py-1.5 rounded text-xs font-bold transition-colors border border-college-gold/30"
+              >
+                <span>View Official SIH Problem Statements</span>
+                <ExternalLink className="w-3.5 h-3.5 text-college-gold" />
+              </a>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Problem Statement ID <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. SIH1284"
+                  value={selectedPsId}
+                  onChange={e => setSelectedPsId(e.target.value)}
+                  className="w-full px-3.5 py-2 text-xs border border-slate-300 rounded focus:ring-2 focus:ring-college-navy font-mono outline-none bg-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Problem Statement Title <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. AI-Driven Smart Water Quality Monitoring"
+                  value={psTitle}
+                  onChange={e => setPsTitle(e.target.value)}
+                  className="w-full px-3.5 py-2 text-xs border border-slate-300 rounded focus:ring-2 focus:ring-college-navy outline-none bg-white"
+                />
+              </div>
+            </div>
           </div>
         </div>
 

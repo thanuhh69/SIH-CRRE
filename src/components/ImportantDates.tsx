@@ -26,16 +26,16 @@ export default function ImportantDates() {
               Important Dates & Schedule
             </h2>
             <p className="text-slate-600 text-xs leading-relaxed">
-              Official schedule for SIH Internal Hackathon 2026 at Sir C.R. Reddy College of Engineering. Dates will be finalized in coordination with Ministry guidelines.
+              Official schedule for SIH Internal Hackathon 2026 at Sir C.R. Reddy College of Engineering. The main campus hackathon will take place on <strong>15th & 16th September 2026</strong>.
             </p>
 
             <div className="p-4 bg-amber-50 border-l-4 border-amber-500 rounded text-xs text-amber-900 space-y-2">
               <div className="flex items-center gap-1.5 font-bold">
                 <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
-                <span>Notice to Team Leaders</span>
+                <span>Internal Hackathon Event Dates</span>
               </div>
               <p className="text-[11px] leading-tight text-amber-800">
-                All scheduled dates marked "TBD" will be announced on this portal and pushed to registered leader email IDs.
+                Mark your calendar: <strong>15th & 16th September 2026</strong>. All registered team leaders must report to campus with complete project prototypes.
               </p>
             </div>
           </div>
