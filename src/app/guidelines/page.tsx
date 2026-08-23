@@ -33,7 +33,6 @@ export default function GuidelinesPage() {
       content: [
         'All regular undergraduate (B.Tech) and postgraduate (M.Tech/MCA) students enrolled at Sir C.R. Reddy College of Engineering (Autonomous) are eligible.',
         'Students from any academic department (CSE, ECE, IT, EEE, Mechanical, Civil, AI&DS) can participate.',
-        'No backlog criteria applies for internal screening, but active academic standing is required.',
       ],
     },
     {
