@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { getMainVideo } from '@/lib/firestore';
 import { VideoItem } from '@/types';
 import { 
@@ -71,7 +72,13 @@ export default function AboutSection() {
       <div className="max-w-7xl mx-auto px-4 space-y-12">
         
         {/* Section Heading */}
-        <div className="text-center max-w-3xl mx-auto">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center max-w-3xl mx-auto"
+        >
           <div className="text-xs font-bold text-college-gold uppercase tracking-widest mb-1">
             Sir C.R. Reddy College of Engineering (Autonomous)
           </div>
@@ -81,11 +88,17 @@ export default function AboutSection() {
           <p className="text-slate-600 text-sm leading-relaxed mt-4">
             Smart India Hackathon (SIH) is a nationwide initiative by the Ministry of Education's Innovation Cell to provide students with a platform to solve pressing problems of government ministries, departments, industries, and other organizations.
           </p>
-        </div>
+        </motion.div>
 
         {/* Embedded SIH Promotional Video (Integrate Video directly inside About SIH section) */}
         {videoData && (
-          <div className="max-w-4xl mx-auto bg-slate-900 rounded-xl overflow-hidden shadow-xl border-2 border-college-gold/40">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="max-w-4xl mx-auto bg-slate-900 rounded-xl overflow-hidden shadow-xl border-2 border-college-gold/40"
+          >
             <div className="bg-college-dark text-white px-5 py-3 border-b border-slate-800 flex items-center justify-between">
               <div className="flex items-center gap-2 text-xs font-bold font-serif text-college-goldLight">
                 <Film className="w-4 h-4 text-college-gold" />
@@ -153,17 +166,22 @@ export default function AboutSection() {
                 <p className="text-slate-400 text-xs mt-0.5">{videoData.description}</p>
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Institutional Pillars Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {pillars.map((pillar) => {
+          {pillars.map((pillar, idx) => {
             const Icon = pillar.icon;
             return (
-              <div 
+              <motion.div 
                 key={pillar.title}
-                className="college-card p-6 border border-slate-200 hover:border-college-gold/60 transition-all group"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: idx * 0.08 }}
+                whileHover={{ y: -6, boxShadow: "0 12px 24px -6px rgba(11, 37, 69, 0.12)" }}
+                className="college-card p-6 border border-slate-200 hover:border-college-gold/60 transition-all group cursor-pointer"
               >
                 <div className="w-12 h-12 rounded bg-college-light border border-college-border text-college-navy flex items-center justify-center mb-4 group-hover:bg-college-navy group-hover:text-college-gold transition-colors">
                   <Icon className="w-6 h-6" />
@@ -174,13 +192,19 @@ export default function AboutSection() {
                 <p className="text-slate-600 text-xs leading-relaxed">
                   {pillar.desc}
                 </p>
-              </div>
+              </motion.div>
             );
           })}
         </div>
 
         {/* College Commitment Box */}
-        <div className="bg-college-light border-l-4 border-college-navy p-6 rounded-r shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="bg-college-light border-l-4 border-college-navy p-6 rounded-r shadow-sm flex flex-col md:flex-row items-center justify-between gap-4"
+        >
           <div className="flex items-start gap-3">
             <ShieldCheck className="w-6 h-6 text-college-navy shrink-0 mt-1" />
             <div>
@@ -192,7 +216,7 @@ export default function AboutSection() {
               </p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
       </div>
     </section>
