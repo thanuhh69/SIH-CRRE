@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { getMainVideo } from '@/lib/firestore';
+import { getMainVideo, subscribeMainVideo } from '@/lib/firestore';
 import { VideoItem } from '@/types';
 import { 
   Lightbulb, 
