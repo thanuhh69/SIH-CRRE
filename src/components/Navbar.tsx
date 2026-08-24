@@ -88,9 +88,9 @@ export default function Navbar() {
         {/* SIH Official Logo Emblem & CTA */}
         <div className="hidden lg:flex items-center gap-4 shrink-0">
           <img 
-            src="https://www.sih.gov.in/img/sih2022-logo.png" 
+            src="/sih-logo.png" 
             alt="Smart India Hackathon Official Logo" 
-            className="h-10 sm:h-12 w-auto object-contain drop-shadow-xs" 
+            className="h-11 sm:h-14 w-auto object-contain drop-shadow-sm" 
           />
           <Link
             href="/register"

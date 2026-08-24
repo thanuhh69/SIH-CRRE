@@ -216,9 +216,9 @@ export default function PublicResultsPage() {
               <div className="max-w-7xl mx-auto text-center space-y-4">
                 <div className="flex justify-center mb-2">
                   <img 
-                    src="https://www.sih.gov.in/img/sih2022-logo.png" 
+                    src="/sih-logo.png" 
                     alt="Smart India Hackathon Official Logo" 
-                    className="h-16 w-auto bg-white p-2 rounded-lg border border-amber-300 shadow-md object-contain" 
+                    className="h-16 sm:h-20 w-auto bg-white p-2 rounded-xl border border-amber-300 shadow-md object-contain" 
                   />
                 </div>
 
