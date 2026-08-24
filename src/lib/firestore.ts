@@ -711,16 +711,23 @@ const INITIAL_SLIDESHOW_IMAGES: SlideshowImage[] = [
   }
 ];
 
+let slideshowInitialized = false;
+
 export const getSlideshowImages = async (): Promise<SlideshowImage[]> => {
   try {
     const snapshot = await getDocs(collection(db, 'slideshowImages'));
     if (!snapshot.empty) {
+      slideshowInitialized = true;
       return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as SlideshowImage));
     }
-    for (const slide of INITIAL_SLIDESHOW_IMAGES) {
-      await setDoc(doc(db, 'slideshowImages', slide.id), slide);
+    if (!slideshowInitialized) {
+      slideshowInitialized = true;
+      for (const slide of INITIAL_SLIDESHOW_IMAGES) {
+        await setDoc(doc(db, 'slideshowImages', slide.id), slide);
+      }
+      return INITIAL_SLIDESHOW_IMAGES;
     }
-    return INITIAL_SLIDESHOW_IMAGES;
+    return [];
   } catch (err) {
     console.error('Firestore getSlideshowImages error:', err);
     return INITIAL_SLIDESHOW_IMAGES;
@@ -729,12 +736,19 @@ export const getSlideshowImages = async (): Promise<SlideshowImage[]> => {
 
 export const subscribeSlideshowImages = (callback: (images: SlideshowImage[]) => void) => {
   try {
-    return onSnapshot(collection(db, 'slideshowImages'), (snapshot) => {
+    return onSnapshot(collection(db, 'slideshowImages'), async (snapshot) => {
       if (!snapshot.empty) {
+        slideshowInitialized = true;
         const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as SlideshowImage));
         callback(list);
-      } else {
+      } else if (!slideshowInitialized) {
+        slideshowInitialized = true;
+        for (const slide of INITIAL_SLIDESHOW_IMAGES) {
+          await setDoc(doc(db, 'slideshowImages', slide.id), slide);
+        }
         callback(INITIAL_SLIDESHOW_IMAGES);
+      } else {
+        callback([]);
       }
     }, (err) => {
       console.error('Error in subscribeSlideshowImages snapshot:', err);
@@ -747,6 +761,7 @@ export const subscribeSlideshowImages = (callback: (images: SlideshowImage[]) =>
 
 export const saveSlideshowImage = async (image: SlideshowImage): Promise<void> => {
   try {
+    slideshowInitialized = true;
     await setDoc(doc(db, 'slideshowImages', image.id), image);
   } catch (err) {
     console.error('Firestore saveSlideshowImage error:', err);
@@ -755,6 +770,7 @@ export const saveSlideshowImage = async (image: SlideshowImage): Promise<void> =
 
 export const deleteSlideshowImage = async (id: string): Promise<void> => {
   try {
+    slideshowInitialized = true;
     await deleteDoc(doc(db, 'slideshowImages', id));
   } catch (err) {
     console.error('Firestore deleteSlideshowImage error:', err);

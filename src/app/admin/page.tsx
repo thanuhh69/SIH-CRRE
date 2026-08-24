@@ -553,6 +553,7 @@ export default function AdminDashboardPage() {
 
   const handleDeleteSlide = async (id: string) => {
     if (confirm('Are you sure you want to delete this slideshow image from the homepage?')) {
+      setSlideshowImages(prev => prev.filter(s => s.id !== id));
       await deleteSlideshowImage(id);
     }
   };
