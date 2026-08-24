@@ -52,7 +52,7 @@ export default function AboutSection() {
     },
     {
       title: 'Teamwork',
-      desc: 'Fostering interdisciplinary collaboration across CSE, ECE, IT, EEE, Civil, and Mechanical departments.',
+      desc: 'Fostering interdisciplinary collaboration across CSE, ECE, IT, EEE, AI&DS, AI&ML, Cyber Security, Civil, and Mechanical departments.',
       icon: Users,
     },
     {

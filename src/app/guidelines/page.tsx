@@ -32,7 +32,7 @@ export default function GuidelinesPage() {
       icon: ShieldCheck,
       content: [
         'All regular undergraduate (B.Tech) and postgraduate (M.Tech/MCA) students enrolled at Sir C.R. Reddy College of Engineering (Autonomous) are eligible.',
-        'Students from any academic department (CSE, ECE, IT, EEE, Mechanical, Civil, AI&DS) can participate.',
+        'Students from any academic department (CSE, ECE, IT, EEE, Mechanical, Civil, AI&DS, AI&ML, Cyber Security) can participate.',
       ],
     },
     {

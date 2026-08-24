@@ -32,6 +32,8 @@ const DEPARTMENTS = [
   'Information Technology',
   'Electrical & Electronics Engineering',
   'Artificial Intelligence & Data Science',
+  'Artificial Intelligence & Machine Learning',
+  'Cyber Security',
   'Mechanical Engineering',
   'Civil Engineering',
 ];
