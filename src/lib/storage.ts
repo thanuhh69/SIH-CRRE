@@ -3,7 +3,7 @@ import { storage } from './firebase';
 
 export const uploadFileWithFallback = async (
   file: File, 
-  folder: 'alumni' | 'videos' | 'registration-files' | 'resources'
+  folder: 'alumni' | 'videos' | 'registration-files' | 'resources' | 'slideshow-images'
 ): Promise<string> => {
   const isFirebaseConfigured =
     process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID &&

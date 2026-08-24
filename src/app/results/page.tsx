@@ -214,6 +214,14 @@ export default function PublicResultsPage() {
             {/* Hero Header */}
             <section className="bg-gradient-to-r from-college-dark via-slate-900 to-college-navy text-white py-12 px-4 border-b-4 border-college-gold shadow-lg">
               <div className="max-w-7xl mx-auto text-center space-y-4">
+                <div className="flex justify-center mb-2">
+                  <img 
+                    src="https://www.sih.gov.in/img/sih2022-logo.png" 
+                    alt="Smart India Hackathon Official Logo" 
+                    className="h-16 w-auto bg-white p-2 rounded-lg border border-amber-300 shadow-md object-contain" 
+                  />
+                </div>
+
                 <div className="inline-flex items-center gap-2 bg-college-gold/20 text-college-goldLight px-3.5 py-1 rounded-full text-xs font-mono font-bold border border-college-gold/40">
                   <Sparkles className="w-4 h-4 text-college-gold" />
                   <span>OFFICIAL ANNOUNCEMENT</span>

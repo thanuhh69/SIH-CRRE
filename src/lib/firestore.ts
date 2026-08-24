@@ -21,7 +21,8 @@ import {
   ResultItem,
   ResultsConfig,
   SamplePPTResource,
-  ParticipationMetrics
+  ParticipationMetrics,
+  SlideshowImage
 } from '@/types';
 import { 
   ALUMNI_DATA, 
@@ -196,6 +197,14 @@ export const updateRegistrationStatus = async (id: string, status: 'approved' | 
     await updateDoc(doc(db, 'registrations', id), { status });
   } catch (err) {
     console.error('Firestore update error:', err);
+  }
+};
+
+export const updateRegistrationAttendance = async (id: string, attendance: 'present' | 'absent'): Promise<void> => {
+  try {
+    await updateDoc(doc(db, 'registrations', id), { attendance });
+  } catch (err) {
+    console.error('Firestore attendance update error:', err);
   }
 };
 
@@ -669,5 +678,85 @@ export const subscribeParticipationMetrics = (callback: (metrics: ParticipationM
   } catch (err) {
     console.error('Error establishing subscribeParticipationMetrics listener:', err);
     return () => {};
+  }
+};
+
+// ==========================================
+// 10. HOMEPAGE SLIDESHOW IMAGES API
+// ==========================================
+const INITIAL_SLIDESHOW_IMAGES: SlideshowImage[] = [
+  {
+    id: 'slide-1',
+    url: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=1200',
+    title: 'Sir C.R. Reddy CoE Campus & Innovation Hub',
+    caption: 'State-of-the-art research laboratories, computer centers, and student hackathon spaces.',
+    createdAt: new Date().toISOString(),
+    order: 1
+  },
+  {
+    id: 'slide-2',
+    url: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&q=80&w=1200',
+    title: 'Smart India Hackathon Evaluation & Pitching',
+    caption: 'Student teams presenting prototype solutions to domain experts and ministry evaluators.',
+    createdAt: new Date().toISOString(),
+    order: 2
+  },
+  {
+    id: 'slide-3',
+    url: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=1200',
+    title: 'Collaborative Teamwork & Hardware Prototyping',
+    caption: 'Interdisciplinary teams assembling IoT circuits and AI algorithms.',
+    createdAt: new Date().toISOString(),
+    order: 3
+  }
+];
+
+export const getSlideshowImages = async (): Promise<SlideshowImage[]> => {
+  try {
+    const snapshot = await getDocs(collection(db, 'slideshowImages'));
+    if (!snapshot.empty) {
+      return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as SlideshowImage));
+    }
+    for (const slide of INITIAL_SLIDESHOW_IMAGES) {
+      await setDoc(doc(db, 'slideshowImages', slide.id), slide);
+    }
+    return INITIAL_SLIDESHOW_IMAGES;
+  } catch (err) {
+    console.error('Firestore getSlideshowImages error:', err);
+    return INITIAL_SLIDESHOW_IMAGES;
+  }
+};
+
+export const subscribeSlideshowImages = (callback: (images: SlideshowImage[]) => void) => {
+  try {
+    return onSnapshot(collection(db, 'slideshowImages'), (snapshot) => {
+      if (!snapshot.empty) {
+        const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as SlideshowImage));
+        callback(list);
+      } else {
+        callback(INITIAL_SLIDESHOW_IMAGES);
+      }
+    }, (err) => {
+      console.error('Error in subscribeSlideshowImages snapshot:', err);
+    });
+  } catch (err) {
+    console.error('Error establishing subscribeSlideshowImages listener:', err);
+    return () => {};
+  }
+};
+
+export const saveSlideshowImage = async (image: SlideshowImage): Promise<void> => {
+  try {
+    await setDoc(doc(db, 'slideshowImages', image.id), image);
+  } catch (err) {
+    console.error('Firestore saveSlideshowImage error:', err);
+  }
+};
+
+export const deleteSlideshowImage = async (id: string): Promise<void> => {
+  try {
+    await deleteDoc(doc(db, 'slideshowImages', id));
+  } catch (err) {
+    console.error('Firestore deleteSlideshowImage error:', err);
   }
 };

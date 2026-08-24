@@ -70,13 +70,13 @@ export default function Hero() {
             </p>
 
             {/* Buttons CTA Section */}
-            <div className="pt-1 sm:pt-2 space-y-3">
-              {/* Row 1: REGISTER YOUR TEAM */}
+            <div className="pt-2 sm:pt-4 space-y-3">
+              {/* Main Action: REGISTER YOUR TEAM */}
               <div>
                 <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
                   <Link
                     href="/register"
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-gradient-to-r from-college-gold via-amber-500 to-college-gold text-college-dark px-6 sm:px-8 py-3.5 rounded font-extrabold text-xs sm:text-sm shadow-xl hover:brightness-110 transition-all border border-amber-300 min-h-[44px] relative overflow-hidden"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-gradient-to-r from-college-gold via-amber-500 to-college-gold text-college-dark px-7 sm:px-9 py-3.5 rounded-lg font-extrabold text-xs sm:text-sm shadow-xl hover:brightness-110 transition-all border border-amber-300 min-h-[44px] relative overflow-hidden"
                   >
                     <span>REGISTER YOUR TEAM</span>
                     <ArrowRight className="w-4 h-4 text-college-dark shrink-0" />
@@ -84,16 +84,18 @@ export default function Hero() {
                 </motion.div>
               </div>
 
-              {/* Row 2: EXPLORE SIH & EXPLORE PROBLEM STATEMENTS */}
-              <div className="flex flex-col xs:flex-row items-stretch sm:items-center justify-center md:justify-start gap-2.5 sm:gap-3">
+              {/* Side-by-Side CTA Buttons: EXPLORE SIH & EXPLORE PROBLEM STATEMENTS */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center md:justify-start gap-3">
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  <Link
-                    href="/#about"
-                    className="w-full xs:w-auto inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white px-4 sm:px-5 py-3 rounded font-semibold text-xs border border-white/20 transition-colors min-h-[44px]"
+                  <a
+                    href="https://www.sih.gov.in/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white px-5 py-3 rounded-lg font-bold text-xs border border-white/30 transition-colors shadow-sm min-h-[44px]"
                   >
                     <span>EXPLORE SIH</span>
-                    <ChevronRight className="w-4 h-4 text-college-gold shrink-0" />
-                  </Link>
+                    <ExternalLink className="w-4 h-4 text-college-gold shrink-0" />
+                  </a>
                 </motion.div>
 
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
@@ -101,7 +103,7 @@ export default function Hero() {
                     href={OFFICIAL_SIH_PORTAL_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full xs:w-auto inline-flex items-center justify-center gap-2 bg-college-navy/90 hover:bg-college-blue text-college-goldLight px-4 sm:px-5 py-3 rounded font-semibold text-xs border border-college-gold/40 transition-colors shadow-md hover:border-college-gold min-h-[44px]"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-college-navy/90 hover:bg-college-blue text-college-goldLight px-5 py-3 rounded-lg font-bold text-xs border border-college-gold/50 transition-colors shadow-md hover:border-college-gold min-h-[44px]"
                   >
                     <span className="truncate">EXPLORE PROBLEM STATEMENTS</span>
                     <ExternalLink className="w-4 h-4 text-college-gold shrink-0" />

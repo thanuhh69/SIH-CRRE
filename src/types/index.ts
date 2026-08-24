@@ -20,11 +20,22 @@ export interface TeamRegistration {
   problemStatementTitle: string;
   facultyMentor?: string;
   members: TeamMember[];
+  attendance?: 'present' | 'absent';
   status: 'pending' | 'approved' | 'rejected';
   submittedAt: string;
   pptUrl?: string;
   pptFileName?: string;
   notes?: string;
+}
+
+export interface SlideshowImage {
+  id: string;
+  url: string;
+  title: string;
+  caption?: string;
+  storagePath?: string;
+  createdAt: string;
+  order?: number;
 }
 
 export interface Alumni {

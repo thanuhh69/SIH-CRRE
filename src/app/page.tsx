@@ -3,6 +3,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Hero from '@/components/Hero';
 import AnnouncementBar from '@/components/AnnouncementBar';
+import CollegeSlideshow from '@/components/CollegeSlideshow';
 import AboutSection from '@/components/AboutSection';
 import JourneySection from '@/components/JourneySection';
 import AlumniCarousel from '@/components/AlumniCarousel';
@@ -11,7 +12,7 @@ import Timeline from '@/components/Timeline';
 import ImportantDates from '@/components/ImportantDates';
 import PrizeMoneySection from '@/components/PrizeMoneySection';
 
-// SIH 2026 Internal Hackathon Homepage
+// SIH 2026 Internal Hackathon Homepage (College Institutional Theme)
 export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
@@ -20,6 +21,7 @@ export default function HomePage() {
       <main className="flex-grow">
         <Hero />
         <AnnouncementBar />
+        <CollegeSlideshow />
         <AboutSection />
         <PrizeMoneySection />
         <JourneySection />

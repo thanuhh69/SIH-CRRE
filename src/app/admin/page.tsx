@@ -15,6 +15,7 @@ import {
   getRegistrations, 
   subscribeRegistrations,
   updateRegistrationStatus, 
+  updateRegistrationAttendance,
   deleteRegistration, 
   getAlumni, 
   subscribeAlumni,
@@ -32,9 +33,10 @@ import {
   subscribeEventDates,
   saveEventDate,
   deleteEventDate,
-  getMainVideo,
-  subscribeMainVideo,
-  saveMainVideo,
+  getSlideshowImages,
+  subscribeSlideshowImages,
+  saveSlideshowImage,
+  deleteSlideshowImage,
   getResults,
   subscribeResults,
   saveResult,
@@ -56,7 +58,7 @@ import {
   ProblemStatement, 
   Announcement, 
   EventDate, 
-  VideoItem,
+  SlideshowImage,
   ResultItem,
   ResultsConfig,
   SamplePPTResource,
@@ -107,7 +109,7 @@ export default function AdminDashboardPage() {
 
   // Tab State
   const [activeTab, setActiveTab] = useState<
-    'registrations' | 'results' | 'resources' | 'metrics' | 'alumni' | 'problems' | 'video' | 'announcements' | 'dates'
+    'registrations' | 'results' | 'resources' | 'metrics' | 'alumni' | 'problems' | 'slideshow' | 'announcements' | 'dates'
   >('registrations');
 
   // Data States
@@ -116,7 +118,13 @@ export default function AdminDashboardPage() {
   const [problems, setProblems] = useState<ProblemStatement[]>([]);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [events, setEvents] = useState<EventDate[]>([]);
-  const [videoData, setVideoData] = useState<VideoItem | null>(null);
+  const [slideshowImages, setSlideshowImages] = useState<SlideshowImage[]>([]);
+
+  // New Slide Form State
+  const [newSlideTitle, setNewSlideTitle] = useState('');
+  const [newSlideCaption, setNewSlideCaption] = useState('');
+  const [newSlideUrl, setNewSlideUrl] = useState('');
+  const [isUploadingSlide, setIsUploadingSlide] = useState(false);
 
   // Participation Metrics State
   const [metricsForm, setMetricsForm] = useState<ParticipationMetrics>({
@@ -171,7 +179,7 @@ export default function AdminDashboardPage() {
     const unsubPs = subscribeProblemStatements((list) => setProblems(list));
     const unsubAnns = subscribeAnnouncements((list) => setAnnouncements(list));
     const unsubEvts = subscribeEventDates((list) => setEvents(list));
-    const unsubVid = subscribeMainVideo((vid) => setVideoData(vid));
+    const unsubSlides = subscribeSlideshowImages((list) => setSlideshowImages(list));
     const unsubRes = subscribeResults((list) => setResultsList(list));
     const unsubCfg = subscribeResultsConfig((cfg) => setResultsConfig(cfg));
     const unsubPpt = subscribeSamplePPT((ppt) => setSamplePPT(ppt));
@@ -183,7 +191,7 @@ export default function AdminDashboardPage() {
       unsubPs();
       unsubAnns();
       unsubEvts();
-      unsubVid();
+      unsubSlides();
       unsubRes();
       unsubCfg();
       unsubPpt();
@@ -207,8 +215,8 @@ export default function AdminDashboardPage() {
     const evts = await getEventDates();
     setEvents(evts);
 
-    const vid = await getMainVideo();
-    setVideoData(vid);
+    const slides = await getSlideshowImages();
+    setSlideshowImages(slides);
 
     const res = await getResults();
     setResultsList(res);
@@ -500,6 +508,55 @@ export default function AdminDashboardPage() {
     loadAllAdminData();
   };
 
+  // Attendance Toggle Handler
+  const handleToggleAttendance = async (regId: string, currentAttendance?: 'present' | 'absent') => {
+    const nextAttendance: 'present' | 'absent' = currentAttendance === 'present' ? 'absent' : 'present';
+    await updateRegistrationAttendance(regId, nextAttendance);
+  };
+
+  // Slideshow Management Handlers
+  const handleAddSlide = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newSlideTitle || !newSlideUrl) {
+      alert('Please provide a title and an image URL or upload an image file.');
+      return;
+    }
+    const newSlide: SlideshowImage = {
+      id: `slide-${Date.now()}`,
+      url: newSlideUrl,
+      title: newSlideTitle,
+      caption: newSlideCaption,
+      createdAt: new Date().toISOString(),
+      order: slideshowImages.length + 1
+    };
+    await saveSlideshowImage(newSlide);
+    setNewSlideTitle('');
+    setNewSlideCaption('');
+    setNewSlideUrl('');
+    alert('Homepage slideshow image added successfully!');
+  };
+
+  const handleSlideImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploadingSlide(true);
+    try {
+      const url = await uploadFileWithFallback(file, 'slideshow-images');
+      setNewSlideUrl(url);
+    } catch (err) {
+      console.error('Slide upload error:', err);
+      alert('Failed to upload slide image.');
+    } finally {
+      setIsUploadingSlide(false);
+    }
+  };
+
+  const handleDeleteSlide = async (id: string) => {
+    if (confirm('Are you sure you want to delete this slideshow image from the homepage?')) {
+      await deleteSlideshowImage(id);
+    }
+  };
+
   const exportCSV = () => {
     if (registrations.length === 0) return;
     const headers = ['Registration ID', 'Team Name', 'Leader Name', 'Leader Email', 'Leader Phone', 'Department', 'Year', 'PS ID', 'PS Title', 'Status', 'Submitted At'];
@@ -721,7 +778,7 @@ export default function AdminDashboardPage() {
               { id: 'metrics', label: 'Participation Metrics', icon: Sparkles },
               { id: 'alumni', label: 'Alumni Showcase', icon: ShieldCheck },
               { id: 'problems', label: 'Problem Statements', icon: BookOpen },
-              { id: 'video', label: 'About SIH Video', icon: Film },
+              { id: 'slideshow', label: 'Homepage Slideshow', icon: ImageIcon },
               { id: 'announcements', label: 'Notice Board', icon: Bell },
               { id: 'dates', label: 'Important Dates', icon: Calendar },
             ].map(tab => {
@@ -763,7 +820,7 @@ export default function AdminDashboardPage() {
                   <select
                     value={statusFilter}
                     onChange={e => setStatusFilter(e.target.value as any)}
-                    className="px-3 py-1.5 text-xs border border-slate-300 rounded bg-white font-medium"
+                    className="px-3 py-1.5 text-xs border border-slate-300 rounded outline-none font-bold bg-white"
                   >
                     <option value="ALL">All Status</option>
                     <option value="pending">Pending</option>
@@ -790,13 +847,14 @@ export default function AdminDashboardPage() {
                       <th className="p-3">Department</th>
                       <th className="p-3">PS ID</th>
                       <th className="p-3">Status</th>
+                      <th className="p-3 text-center">Attendance</th>
                       <th className="p-3 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-200">
                     {filteredRegistrations.length === 0 ? (
                       <tr>
-                        <td colSpan={7} className="p-8 text-center text-slate-500">
+                        <td colSpan={8} className="p-8 text-center text-slate-500">
                           No team registrations found matching your query.
                         </td>
                       </tr>
@@ -816,6 +874,19 @@ export default function AdminDashboardPage() {
                             }`}>
                               {reg.status.toUpperCase()}
                             </span>
+                          </td>
+                          <td className="p-3 text-center">
+                            <button
+                              onClick={() => handleToggleAttendance(reg.id, reg.attendance)}
+                              className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold tracking-wider border transition-all cursor-pointer ${
+                                reg.attendance === 'present'
+                                  ? 'bg-emerald-600 text-white border-emerald-700 shadow-xs'
+                                  : 'bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200'
+                              }`}
+                              title="Click to toggle Present / Absent attendance"
+                            >
+                              {reg.attendance === 'present' ? '✓ PRESENT' : '✗ ABSENT'}
+                            </button>
                           </td>
                           <td className="p-3 text-right space-x-1 whitespace-nowrap">
                             <button
@@ -1300,50 +1371,122 @@ export default function AdminDashboardPage() {
             </div>
           )}
 
-          {/* TAB 6: ABOUT SIH VIDEO */}
-          {activeTab === 'video' && (
-            <div className="p-6 space-y-4">
-              <h3 className="font-serif font-bold text-base text-college-navy">About SIH Featured Video Configuration</h3>
-              {videoData && (
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    saveMainVideo(videoData).then(() => alert('SIH Video settings saved successfully!'));
-                  }}
-                  className="space-y-4 max-w-lg bg-slate-50 p-4 border rounded text-xs"
+          {/* TAB 6: HOMEPAGE SLIDESHOW MANAGEMENT */}
+          {activeTab === 'slideshow' && (
+            <div className="p-6 space-y-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900 text-white p-5 rounded-lg border-2 border-college-gold">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <ImageIcon className="w-5 h-5 text-college-gold" />
+                    <h3 className="font-serif font-bold text-lg text-white">Homepage Photo Slideshow Banner Manager</h3>
+                  </div>
+                  <p className="text-xs text-slate-300 mt-1">
+                    Upload, view, and manage photos displayed on the college-themed homepage slideshow banner.
+                  </p>
+                </div>
+              </div>
+
+              {/* Upload & Add New Slide Form */}
+              <form onSubmit={handleAddSlide} className="bg-slate-50 p-5 rounded-lg border border-slate-300 space-y-4 max-w-2xl">
+                <h4 className="font-serif font-bold text-sm text-college-navy flex items-center gap-2">
+                  <Plus className="w-4 h-4 text-college-gold" /> Add New Homepage Slideshow Image
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Slide Title *</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. SIH Hackathon Inauguration & Hardware Expo"
+                      value={newSlideTitle}
+                      onChange={e => setNewSlideTitle(e.target.value)}
+                      className="w-full px-3 py-2 border border-slate-300 rounded outline-none bg-white focus:ring-2 focus:ring-college-navy"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Slide Caption (Optional)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Student teams showcasing IoT prototypes to evaluators."
+                      value={newSlideCaption}
+                      onChange={e => setNewSlideCaption(e.target.value)}
+                      className="w-full px-3 py-2 border border-slate-300 rounded outline-none bg-white focus:ring-2 focus:ring-college-navy"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2 text-xs">
+                  <label className="block font-bold text-slate-700">Image Source (Upload File or Enter URL) *</label>
+                  <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+                    <input
+                      type="text"
+                      placeholder="https://..."
+                      value={newSlideUrl}
+                      onChange={e => setNewSlideUrl(e.target.value)}
+                      className="flex-grow px-3 py-2 border border-slate-300 rounded outline-none bg-white focus:ring-2 focus:ring-college-navy"
+                    />
+                    <label className="inline-flex items-center justify-center gap-1.5 bg-college-navy hover:bg-college-blue text-white px-4 py-2 rounded font-bold cursor-pointer shrink-0 transition-colors">
+                      <Upload className="w-4 h-4 text-college-gold" />
+                      <span>{isUploadingSlide ? 'Uploading...' : 'Upload Image'}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleSlideImageUpload}
+                        className="hidden"
+                        disabled={isUploadingSlide}
+                      />
+                    </label>
+                  </div>
+                  {newSlideUrl && (
+                    <div className="mt-2 p-2 bg-white rounded border border-slate-200 flex items-center gap-3">
+                      <img src={newSlideUrl} alt="Preview" className="w-16 h-12 object-cover rounded border" />
+                      <span className="text-[11px] font-mono text-emerald-700 font-bold">✓ Image URL Ready</span>
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  type="submit"
+                  className="bg-college-gold hover:bg-amber-600 text-college-dark px-6 py-2.5 rounded font-extrabold text-xs shadow-md transition-all border border-amber-400"
                 >
-                  <div>
-                    <label className="block font-bold mb-1">Video Title</label>
-                    <input
-                      type="text"
-                      value={videoData.title}
-                      onChange={e => setVideoData({ ...videoData, title: e.target.value })}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-bold mb-1">YouTube / Embed Video URL</label>
-                    <input
-                      type="text"
-                      value={videoData.videoUrl}
-                      onChange={e => setVideoData({ ...videoData, videoUrl: e.target.value })}
-                      className="w-full p-2 border rounded font-mono"
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-bold mb-1">Description</label>
-                    <textarea
-                      rows={3}
-                      value={videoData.description}
-                      onChange={e => setVideoData({ ...videoData, description: e.target.value })}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                  <button type="submit" className="bg-college-navy text-white px-4 py-2 rounded font-bold">
-                    Save Video Configuration
-                  </button>
-                </form>
-              )}
+                  Publish Slide to Homepage →
+                </button>
+              </form>
+
+              {/* Active Slides Grid */}
+              <div className="space-y-3">
+                <h4 className="font-serif font-bold text-sm text-college-navy">Active Homepage Slides ({slideshowImages.length})</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {slideshowImages.map((slide, idx) => (
+                    <div key={slide.id} className="bg-white rounded-lg border border-slate-300 overflow-hidden shadow-sm flex flex-col justify-between">
+                      <div>
+                        <div className="relative h-40 bg-black">
+                          <img src={slide.url} alt={slide.title} className="w-full h-full object-cover" />
+                          <span className="absolute top-2 left-2 bg-college-navy text-white text-[10px] font-mono font-bold px-2 py-0.5 rounded">
+                            Slide #{idx + 1}
+                          </span>
+                        </div>
+                        <div className="p-4 space-y-1">
+                          <h5 className="font-serif font-bold text-sm text-college-navy">{slide.title}</h5>
+                          {slide.caption && <p className="text-xs text-slate-600 leading-tight">{slide.caption}</p>}
+                        </div>
+                      </div>
+
+                      <div className="p-3 bg-slate-50 border-t border-slate-200 flex justify-between items-center text-xs">
+                        <span className="text-[10px] text-slate-400 font-mono">ID: {slide.id}</span>
+                        <button
+                          onClick={() => handleDeleteSlide(slide.id)}
+                          className="text-red-600 hover:text-red-800 font-bold inline-flex items-center gap-1 bg-red-50 hover:bg-red-100 px-2 py-1 rounded border border-red-200"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" /> Delete Slide
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
 

@@ -17,16 +17,23 @@ export default function RegisterPage() {
           <div className="bg-gradient-to-r from-college-dark via-college-navy to-college-dark text-white rounded-2xl p-6 md:p-8 border-b-4 border-college-gold shadow-2xl space-y-6">
             
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/10 pb-6">
-              <div>
-                <span className="text-xs font-mono font-bold text-college-gold tracking-widest uppercase bg-college-gold/10 px-3 py-1 rounded border border-college-gold/30">
-                  SIH Internal Hackathon 2026
-                </span>
-                <h1 className="font-serif font-extrabold text-2xl sm:text-3xl md:text-4xl text-white mt-2">
-                  Official Team Registration
-                </h1>
-                <p className="text-slate-300 text-xs sm:text-sm mt-1">
-                  Sir C.R. Reddy College of Engineering (Autonomous), Eluru, Andhra Pradesh
-                </p>
+              <div className="flex items-center gap-4">
+                <img 
+                  src="https://www.sih.gov.in/img/sih2022-logo.png" 
+                  alt="Smart India Hackathon Official Logo" 
+                  className="h-14 sm:h-16 w-auto bg-white p-2 rounded-lg border border-amber-300 shadow-md shrink-0 object-contain" 
+                />
+                <div>
+                  <span className="text-xs font-mono font-bold text-college-gold tracking-widest uppercase bg-college-gold/10 px-3 py-1 rounded border border-college-gold/30">
+                    SIH Internal Hackathon 2026
+                  </span>
+                  <h1 className="font-serif font-extrabold text-2xl sm:text-3xl md:text-4xl text-white mt-1">
+                    Official Team Registration
+                  </h1>
+                  <p className="text-slate-300 text-xs sm:text-sm mt-1">
+                    Sir C.R. Reddy College of Engineering (Autonomous), Eluru, Andhra Pradesh
+                  </p>
+                </div>
               </div>
 
               {/* Event Dates Highlight Badge */}
