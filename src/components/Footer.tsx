@@ -47,7 +47,6 @@ export default function Footer() {
               { name: 'SIH Alumni Showcase', href: '/alumni' },
               { name: 'Guidelines & Instructions', href: '/guidelines' },
               { name: 'Team Registration', href: '/register' },
-              { name: 'Admin Portal', href: '/admin' },
             ].map((link) => (
               <li key={link.name}>
                 <Link 

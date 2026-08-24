@@ -54,10 +54,6 @@ export default function Navbar() {
           </div>
           <div className="flex items-center gap-3 sm:gap-4 text-[10px] sm:text-[11px] text-slate-300">
             <span>📍 Eluru, AP, India</span>
-            <span className="text-slate-500">|</span>
-            <Link href="/admin" className="hover:text-college-gold transition-colors flex items-center gap-1">
-              <Lock className="w-3 h-3 text-college-gold shrink-0" /> Admin Portal
-            </Link>
           </div>
         </div>
       </div>
