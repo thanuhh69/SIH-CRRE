@@ -143,14 +143,10 @@ export const getRegistrations = async (): Promise<TeamRegistration[]> => {
     if (!snapshot.empty) {
       return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as TeamRegistration));
     }
-    // Seed initial registration if Firestore collection is empty
-    for (const reg of INITIAL_REGISTRATIONS) {
-      await setDoc(doc(db, 'registrations', reg.id), reg);
-    }
-    return INITIAL_REGISTRATIONS;
+    return [];
   } catch (err) {
     console.error('Error fetching registrations from Firestore:', err);
-    return INITIAL_REGISTRATIONS;
+    return [];
   }
 };
 
@@ -161,7 +157,7 @@ export const subscribeRegistrations = (callback: (registrations: TeamRegistratio
         const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as TeamRegistration));
         callback(list);
       } else {
-        callback(INITIAL_REGISTRATIONS);
+        callback([]);
       }
     }, (err) => {
       console.error('Error in subscribeRegistrations snapshot:', err);
@@ -567,27 +563,18 @@ export const getResults = async (): Promise<ResultItem[]> => {
     const q = query(collection(db, 'results'), orderBy('rank', 'asc'));
     const snapshot = await getDocs(q);
     if (!snapshot.empty) {
-      resultsInitialized = true;
       return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as ResultItem));
-    }
-    if (!resultsInitialized) {
-      resultsInitialized = true;
-      for (const res of INITIAL_RESULTS) {
-        await setDoc(doc(db, 'results', res.id), res);
-      }
-      return INITIAL_RESULTS;
     }
     return [];
   } catch (err) {
     console.error('Firestore getResults error:', err);
-    return INITIAL_RESULTS;
+    return [];
   }
 };
 
 export const saveResult = async (result: ResultItem): Promise<void> => {
   const updatedResult = { ...result, updatedAt: new Date().toISOString() };
   try {
-    resultsInitialized = true;
     await setDoc(doc(db, 'results', result.id), updatedResult);
   } catch (err) {
     console.error('Firestore saveResult error:', err);
@@ -596,7 +583,6 @@ export const saveResult = async (result: ResultItem): Promise<void> => {
 
 export const deleteResult = async (id: string): Promise<void> => {
   try {
-    resultsInitialized = true;
     await deleteDoc(doc(db, 'results', id));
   } catch (err) {
     console.error('Firestore deleteResult error:', err);
@@ -645,17 +631,10 @@ export const subscribeResultsConfig = (callback: (config: ResultsConfig) => void
 export const subscribeResults = (callback: (results: ResultItem[]) => void) => {
   try {
     const q = query(collection(db, 'results'), orderBy('rank', 'asc'));
-    return onSnapshot(q, async (snapshot) => {
+    return onSnapshot(q, (snapshot) => {
       if (!snapshot.empty) {
-        resultsInitialized = true;
         const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as ResultItem));
         callback(list);
-      } else if (!resultsInitialized) {
-        resultsInitialized = true;
-        for (const res of INITIAL_RESULTS) {
-          await setDoc(doc(db, 'results', res.id), res);
-        }
-        callback(INITIAL_RESULTS);
       } else {
         callback([]);
       }
