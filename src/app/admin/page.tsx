@@ -529,15 +529,21 @@ export default function AdminDashboardPage() {
       id: `slide-${Date.now()}`,
       url: newSlideUrl,
       title: newSlideTitle,
-      caption: newSlideCaption,
+      caption: newSlideCaption || '',
       createdAt: new Date().toISOString(),
       order: slideshowImages.length + 1
     };
-    await saveSlideshowImage(newSlide);
-    setNewSlideTitle('');
-    setNewSlideCaption('');
-    setNewSlideUrl('');
-    alert('Homepage slideshow image added successfully!');
+    try {
+      await saveSlideshowImage(newSlide);
+      setSlideshowImages(prev => [...prev.filter(s => s.id !== newSlide.id), newSlide]);
+      setNewSlideTitle('');
+      setNewSlideCaption('');
+      setNewSlideUrl('');
+      alert('Homepage slideshow image added successfully!');
+    } catch (err) {
+      console.error('Error saving slide:', err);
+      alert('Failed to save slideshow image.');
+    }
   };
 
   const handleSlideImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
