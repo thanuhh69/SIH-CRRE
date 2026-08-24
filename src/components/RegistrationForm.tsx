@@ -116,13 +116,6 @@ export default function RegistrationForm() {
       }
     }
 
-    if (!pptFile) {
-      setPptError('Please select and upload your Problem Statement PPT (.ppt or .pptx) before submitting.');
-      const element = document.getElementById('ppt-upload-section');
-      if (element) element.scrollIntoView({ behavior: 'smooth' });
-      return;
-    }
-
     const selectedPs = problemStatements.find(p => p.psId === selectedPsId);
     const titleToUse = psTitle || (selectedPs ? selectedPs.title : 'Selected Problem Statement');
 
@@ -142,8 +135,9 @@ export default function RegistrationForm() {
     setLoading(true);
 
     try {
-      // Upload PPT file to Storage / base64 fallback
       let uploadedUrl = pptFileUrl || '';
+      let uploadedFileName = pptFile ? pptFile.name : undefined;
+
       if (pptFile) {
         const { uploadFileWithFallback } = await import('@/lib/storage');
         uploadedUrl = await uploadFileWithFallback(pptFile, 'registration-files');
@@ -156,12 +150,12 @@ export default function RegistrationForm() {
         leaderPhone,
         department,
         year,
-        problemStatementId: selectedPsId,
+        problemStatementId: selectedPsId || 'SIH1000',
         problemStatementTitle: titleToUse,
         facultyMentor,
         members: fullMembersList,
         pptUrl: uploadedUrl,
-        pptFileName: pptFile.name,
+        pptFileName: uploadedFileName,
       });
 
       setSubmittedRegistration(result);

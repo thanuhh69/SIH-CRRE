@@ -182,8 +182,11 @@ export const createRegistration = async (registrationData: Omit<TeamRegistration
     submittedAt: new Date().toISOString(),
   };
 
+  // Sanitize undefined property values to prevent Firestore validation errors
+  const cleanedRegistration = JSON.parse(JSON.stringify(newRegistration));
+
   try {
-    await setDoc(doc(db, 'registrations', regId), newRegistration);
+    await setDoc(doc(db, 'registrations', regId), cleanedRegistration);
     console.log('Registration written to Firestore collection "registrations":', regId);
   } catch (err) {
     console.error('Error writing registration to Firestore:', err);

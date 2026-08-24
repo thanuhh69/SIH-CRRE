@@ -20,11 +20,19 @@ export const uploadFileWithFallback = async (
     }
   }
 
-  // Fallback: Read file as base64 Data URL for instant preview & storage
-  return new Promise((resolve, reject) => {
+  // Fallback: Read file as base64 Data URL or safe reference
+  return new Promise((resolve) => {
     const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result as string);
-    reader.onerror = reject;
+    reader.onloadend = () => {
+      const result = reader.result as string;
+      if (result && result.length > 800000) {
+        // Document size safeguard for Firestore (max 1MB per document)
+        resolve(`local-file://${file.name}`);
+      } else {
+        resolve(result);
+      }
+    };
+    reader.onerror = () => resolve(`local-file://${file.name}`);
     reader.readAsDataURL(file);
   });
 };
