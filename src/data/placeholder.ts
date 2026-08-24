@@ -110,7 +110,7 @@ export const VIDEO_DATA: VideoItem = {
   id: 'vid-main',
   title: 'SIH Journey & Internal Hackathon Highlights',
   description: 'Glimpses of innovation, mentorship, pitching sessions, and project evaluation at Sir C.R. Reddy College of Engineering.',
-  videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', // Swappable with YouTube or Firebase Storage URL
+  videoUrl: 'https://www.youtube.com/watch?v=J---aiyznGQ',
   thumbnailUrl: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&q=80&w=1200',
   source: 'youtube',
   isMain: true,

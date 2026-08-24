@@ -438,7 +438,13 @@ export const getMainVideo = async (): Promise<VideoItem> => {
   try {
     const docSnap = await getDoc(doc(db, 'videoMain', 'main'));
     if (docSnap.exists()) {
-      return docSnap.data() as VideoItem;
+      const data = docSnap.data() as VideoItem;
+      if (data.videoUrl && data.videoUrl.includes('dQw4w9WgXcQ')) {
+        const sanitized = { ...data, videoUrl: VIDEO_DATA.videoUrl };
+        await setDoc(doc(db, 'videoMain', 'main'), sanitized);
+        return sanitized;
+      }
+      return data;
     }
     await setDoc(doc(db, 'videoMain', 'main'), VIDEO_DATA);
     return VIDEO_DATA;
@@ -452,7 +458,13 @@ export const subscribeMainVideo = (callback: (video: VideoItem) => void) => {
   try {
     return onSnapshot(doc(db, 'videoMain', 'main'), (docSnap) => {
       if (docSnap.exists()) {
-        callback(docSnap.data() as VideoItem);
+        const data = docSnap.data() as VideoItem;
+        if (data.videoUrl && data.videoUrl.includes('dQw4w9WgXcQ')) {
+          const sanitized = { ...data, videoUrl: VIDEO_DATA.videoUrl };
+          callback(sanitized);
+        } else {
+          callback(data);
+        }
       } else {
         callback(VIDEO_DATA);
       }
