@@ -151,17 +151,17 @@ export default function Hero() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="lg:col-span-5 flex justify-center mt-4 lg:mt-0"
           >
-            <div className="w-full max-w-sm sm:max-w-md bg-college-dark/80 backdrop-blur-md p-6 sm:p-8 rounded-2xl border-2 border-college-gold/40 shadow-2xl relative flex flex-col items-center hover:border-college-gold transition-all">
+            <div className="w-full max-w-sm sm:max-w-md bg-college-dark/90 backdrop-blur-md p-6 sm:p-8 rounded-2xl border-2 border-college-gold/40 shadow-2xl relative flex flex-col items-center hover:border-college-gold transition-all">
               <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-college-navy/90 px-2.5 py-1 rounded text-[10px] text-college-gold font-mono font-semibold border border-college-gold/30">
                 <Sparkles className="w-3 h-3 text-college-gold animate-pulse" />
                 <span>OFFICIAL SIH 2026 EMBLEM</span>
               </div>
               
-              <div className="w-full flex items-center justify-center my-3 pt-6 animate-float max-w-[280px] sm:max-w-[320px] mx-auto">
+              <div className="w-full flex items-center justify-center my-4 pt-6 animate-float">
                 <img
                   src="/sih-logo.png"
                   alt="Smart India Hackathon 2026 Official Logo"
-                  className="max-h-48 sm:max-h-60 object-contain filter drop-shadow-[0_10px_25px_rgba(0,0,0,0.5)] hover:scale-105 transition-transform"
+                  className="max-h-56 sm:max-h-64 w-auto object-contain filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.6)] hover:scale-105 transition-transform"
                 />
               </div>
 
