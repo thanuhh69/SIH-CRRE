@@ -1305,7 +1305,7 @@ export default function AdminDashboardPage() {
                     <div className="flex gap-3 items-center">
                       <div className="w-12 h-12 rounded-full bg-slate-200 border overflow-hidden shrink-0">
                         {alm.photoUrl ? (
-                          <img src={alm.photoUrl} alt={alm.name} className="w-full h-full object-cover" />
+                          <img src={alm.photoUrl} alt={alm.name} className="w-full h-full object-cover object-top" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs font-bold">
                             {alm.name.slice(0, 2).toUpperCase()}

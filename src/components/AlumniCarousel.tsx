@@ -115,19 +115,19 @@ export default function AlumniCarousel() {
               >
                 <div className="college-card p-5 h-full flex flex-col justify-between border border-slate-200 hover:border-college-gold transition-all shadow-sm">
                   <div>
-                    <div className="relative mb-4">
+                    <div className="relative mb-4 overflow-hidden rounded border border-slate-200 aspect-[4/3] bg-slate-100">
                       {item.photoUrl ? (
                         <img
                           src={item.photoUrl}
                           alt={item.name}
-                          className="w-full h-52 object-cover rounded border border-slate-200"
+                          className="w-full h-full object-cover object-top"
                         />
                       ) : (
-                        <div className="w-full h-52 bg-slate-100 rounded flex items-center justify-center text-slate-400 border border-slate-300">
+                        <div className="w-full h-full flex items-center justify-center text-slate-400">
                           <User className="w-14 h-14" />
                         </div>
                       )}
-                      <span className="absolute top-2.5 right-2.5 bg-college-dark/95 text-college-gold text-[10px] font-mono font-bold px-2.5 py-0.5 rounded border border-college-gold/40 shadow-sm">
+                      <span className="absolute top-2.5 right-2.5 bg-college-dark/95 text-college-gold text-[10px] font-mono font-bold px-2.5 py-0.5 rounded border border-college-gold/40 shadow-sm z-10">
                         SIH {item.sihYear}
                       </span>
                     </div>
