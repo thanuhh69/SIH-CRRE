@@ -511,6 +511,7 @@ export default function AdminDashboardPage() {
   // Attendance Toggle Handler
   const handleToggleAttendance = async (regId: string, currentAttendance?: 'present' | 'absent') => {
     const nextAttendance: 'present' | 'absent' = currentAttendance === 'present' ? 'absent' : 'present';
+    setRegistrations(prev => prev.map(r => r.id === regId ? { ...r, attendance: nextAttendance } : r));
     await updateRegistrationAttendance(regId, nextAttendance);
   };
 

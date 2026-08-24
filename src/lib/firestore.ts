@@ -227,17 +227,23 @@ export const deleteRegistration = async (id: string): Promise<void> => {
 // ==========================================
 // 2. ALUMNI COLLECTION API
 // ==========================================
+let alumniInitialized = false;
+
 export const getAlumni = async (): Promise<Alumni[]> => {
   try {
     const snapshot = await getDocs(collection(db, 'alumni'));
     if (!snapshot.empty) {
+      alumniInitialized = true;
       return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Alumni));
     }
-    // Seed initial alumni dataset into Firestore if empty
-    for (const item of ALUMNI_DATA) {
-      await setDoc(doc(db, 'alumni', item.id), item);
+    if (!alumniInitialized) {
+      alumniInitialized = true;
+      for (const item of ALUMNI_DATA) {
+        await setDoc(doc(db, 'alumni', item.id), item);
+      }
+      return ALUMNI_DATA;
     }
-    return ALUMNI_DATA;
+    return [];
   } catch (err) {
     console.error('Firestore alumni query failed:', err);
     return ALUMNI_DATA;
@@ -246,12 +252,19 @@ export const getAlumni = async (): Promise<Alumni[]> => {
 
 export const subscribeAlumni = (callback: (alumni: Alumni[]) => void) => {
   try {
-    return onSnapshot(collection(db, 'alumni'), (snapshot) => {
+    return onSnapshot(collection(db, 'alumni'), async (snapshot) => {
       if (!snapshot.empty) {
+        alumniInitialized = true;
         const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Alumni));
         callback(list);
-      } else {
+      } else if (!alumniInitialized) {
+        alumniInitialized = true;
+        for (const item of ALUMNI_DATA) {
+          await setDoc(doc(db, 'alumni', item.id), item);
+        }
         callback(ALUMNI_DATA);
+      } else {
+        callback([]);
       }
     }, (err) => {
       console.error('Error in subscribeAlumni snapshot:', err);
@@ -264,6 +277,7 @@ export const subscribeAlumni = (callback: (alumni: Alumni[]) => void) => {
 
 export const saveAlumni = async (alumni: Alumni): Promise<void> => {
   try {
+    alumniInitialized = true;
     await setDoc(doc(db, 'alumni', alumni.id), alumni);
   } catch (err) {
     console.error('Firestore saveAlumni error:', err);
@@ -272,6 +286,7 @@ export const saveAlumni = async (alumni: Alumni): Promise<void> => {
 
 export const deleteAlumni = async (id: string): Promise<void> => {
   try {
+    alumniInitialized = true;
     await deleteDoc(doc(db, 'alumni', id));
   } catch (err) {
     console.error('Firestore deleteAlumni error:', err);
@@ -281,17 +296,23 @@ export const deleteAlumni = async (id: string): Promise<void> => {
 // ==========================================
 // 3. PROBLEM STATEMENTS COLLECTION API
 // ==========================================
+let psInitialized = false;
+
 export const getProblemStatements = async (): Promise<ProblemStatement[]> => {
   try {
     const snapshot = await getDocs(collection(db, 'problemStatements'));
     if (!snapshot.empty) {
+      psInitialized = true;
       return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as ProblemStatement));
     }
-    // Seed initial problem statements if empty
-    for (const ps of PROBLEM_STATEMENTS_DATA) {
-      await setDoc(doc(db, 'problemStatements', ps.id), ps);
+    if (!psInitialized) {
+      psInitialized = true;
+      for (const ps of PROBLEM_STATEMENTS_DATA) {
+        await setDoc(doc(db, 'problemStatements', ps.id), ps);
+      }
+      return PROBLEM_STATEMENTS_DATA;
     }
-    return PROBLEM_STATEMENTS_DATA;
+    return [];
   } catch (err) {
     console.error('Firestore problemStatements query failed:', err);
     return PROBLEM_STATEMENTS_DATA;
@@ -300,12 +321,19 @@ export const getProblemStatements = async (): Promise<ProblemStatement[]> => {
 
 export const subscribeProblemStatements = (callback: (psList: ProblemStatement[]) => void) => {
   try {
-    return onSnapshot(collection(db, 'problemStatements'), (snapshot) => {
+    return onSnapshot(collection(db, 'problemStatements'), async (snapshot) => {
       if (!snapshot.empty) {
+        psInitialized = true;
         const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as ProblemStatement));
         callback(list);
-      } else {
+      } else if (!psInitialized) {
+        psInitialized = true;
+        for (const ps of PROBLEM_STATEMENTS_DATA) {
+          await setDoc(doc(db, 'problemStatements', ps.id), ps);
+        }
         callback(PROBLEM_STATEMENTS_DATA);
+      } else {
+        callback([]);
       }
     }, (err) => {
       console.error('Error in subscribeProblemStatements snapshot:', err);
@@ -318,6 +346,7 @@ export const subscribeProblemStatements = (callback: (psList: ProblemStatement[]
 
 export const saveProblemStatement = async (ps: ProblemStatement): Promise<void> => {
   try {
+    psInitialized = true;
     await setDoc(doc(db, 'problemStatements', ps.id), ps);
   } catch (err) {
     console.error('Firestore saveProblemStatement error:', err);
@@ -326,6 +355,7 @@ export const saveProblemStatement = async (ps: ProblemStatement): Promise<void> 
 
 export const deleteProblemStatement = async (id: string): Promise<void> => {
   try {
+    psInitialized = true;
     await deleteDoc(doc(db, 'problemStatements', id));
   } catch (err) {
     console.error('Firestore deleteProblemStatement error:', err);
@@ -335,17 +365,23 @@ export const deleteProblemStatement = async (id: string): Promise<void> => {
 // ==========================================
 // 4. EVENT DATES COLLECTION API (FIRESTORE CENTRALIZED)
 // ==========================================
+let datesInitialized = false;
+
 export const getEventDates = async (): Promise<EventDate[]> => {
   try {
     const snapshot = await getDocs(collection(db, 'eventDates'));
     if (!snapshot.empty) {
+      datesInitialized = true;
       return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as EventDate));
     }
-    // Seed initial dates into Firestore if empty
-    for (const evt of IMPORTANT_DATES_DATA) {
-      await setDoc(doc(db, 'eventDates', evt.id), evt);
+    if (!datesInitialized) {
+      datesInitialized = true;
+      for (const evt of IMPORTANT_DATES_DATA) {
+        await setDoc(doc(db, 'eventDates', evt.id), evt);
+      }
+      return IMPORTANT_DATES_DATA;
     }
-    return IMPORTANT_DATES_DATA;
+    return [];
   } catch (err) {
     console.error('Firestore eventDates query error:', err);
     return IMPORTANT_DATES_DATA;
@@ -354,12 +390,19 @@ export const getEventDates = async (): Promise<EventDate[]> => {
 
 export const subscribeEventDates = (callback: (events: EventDate[]) => void) => {
   try {
-    return onSnapshot(collection(db, 'eventDates'), (snapshot) => {
+    return onSnapshot(collection(db, 'eventDates'), async (snapshot) => {
       if (!snapshot.empty) {
+        datesInitialized = true;
         const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as EventDate));
         callback(list);
-      } else {
+      } else if (!datesInitialized) {
+        datesInitialized = true;
+        for (const evt of IMPORTANT_DATES_DATA) {
+          await setDoc(doc(db, 'eventDates', evt.id), evt);
+        }
         callback(IMPORTANT_DATES_DATA);
+      } else {
+        callback([]);
       }
     }, (err) => {
       console.error('Error in subscribeEventDates snapshot:', err);
@@ -372,6 +415,7 @@ export const subscribeEventDates = (callback: (events: EventDate[]) => void) => 
 
 export const saveEventDate = async (event: EventDate): Promise<void> => {
   try {
+    datesInitialized = true;
     await setDoc(doc(db, 'eventDates', event.id), event);
   } catch (err) {
     console.error('Firestore saveEventDate error:', err);
@@ -380,6 +424,7 @@ export const saveEventDate = async (event: EventDate): Promise<void> => {
 
 export const deleteEventDate = async (id: string): Promise<void> => {
   try {
+    datesInitialized = true;
     await deleteDoc(doc(db, 'eventDates', id));
   } catch (err) {
     console.error('Firestore deleteEventDate error:', err);
@@ -389,17 +434,23 @@ export const deleteEventDate = async (id: string): Promise<void> => {
 // ==========================================
 // 5. ANNOUNCEMENTS COLLECTION API (FIRESTORE CENTRALIZED)
 // ==========================================
+let announcementsInitialized = false;
+
 export const getAnnouncements = async (): Promise<Announcement[]> => {
   try {
     const snapshot = await getDocs(collection(db, 'announcements'));
     if (!snapshot.empty) {
+      announcementsInitialized = true;
       return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Announcement));
     }
-    // Seed initial announcements into Firestore if empty
-    for (const ann of ANNOUNCEMENTS_DATA) {
-      await setDoc(doc(db, 'announcements', ann.id), ann);
+    if (!announcementsInitialized) {
+      announcementsInitialized = true;
+      for (const ann of ANNOUNCEMENTS_DATA) {
+        await setDoc(doc(db, 'announcements', ann.id), ann);
+      }
+      return ANNOUNCEMENTS_DATA;
     }
-    return ANNOUNCEMENTS_DATA;
+    return [];
   } catch (err) {
     console.error('Firestore announcements query error:', err);
     return ANNOUNCEMENTS_DATA;
@@ -408,12 +459,19 @@ export const getAnnouncements = async (): Promise<Announcement[]> => {
 
 export const subscribeAnnouncements = (callback: (announcements: Announcement[]) => void) => {
   try {
-    return onSnapshot(collection(db, 'announcements'), (snapshot) => {
+    return onSnapshot(collection(db, 'announcements'), async (snapshot) => {
       if (!snapshot.empty) {
+        announcementsInitialized = true;
         const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Announcement));
         callback(list);
-      } else {
+      } else if (!announcementsInitialized) {
+        announcementsInitialized = true;
+        for (const ann of ANNOUNCEMENTS_DATA) {
+          await setDoc(doc(db, 'announcements', ann.id), ann);
+        }
         callback(ANNOUNCEMENTS_DATA);
+      } else {
+        callback([]);
       }
     }, (err) => {
       console.error('Error in subscribeAnnouncements snapshot:', err);
@@ -426,6 +484,7 @@ export const subscribeAnnouncements = (callback: (announcements: Announcement[])
 
 export const saveAnnouncement = async (announcement: Announcement): Promise<void> => {
   try {
+    announcementsInitialized = true;
     await setDoc(doc(db, 'announcements', announcement.id), announcement);
   } catch (err) {
     console.error('Firestore saveAnnouncement error:', err);
@@ -434,6 +493,7 @@ export const saveAnnouncement = async (announcement: Announcement): Promise<void
 
 export const deleteAnnouncement = async (id: string): Promise<void> => {
   try {
+    announcementsInitialized = true;
     await deleteDoc(doc(db, 'announcements', id));
   } catch (err) {
     console.error('Firestore deleteAnnouncement error:', err);
@@ -497,17 +557,24 @@ export const saveMainVideo = async (video: VideoItem): Promise<void> => {
 // ==========================================
 // 7. RESULTS & RESULTS CONFIG API
 // ==========================================
+let resultsInitialized = false;
+
 export const getResults = async (): Promise<ResultItem[]> => {
   try {
     const q = query(collection(db, 'results'), orderBy('rank', 'asc'));
     const snapshot = await getDocs(q);
     if (!snapshot.empty) {
+      resultsInitialized = true;
       return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as ResultItem));
     }
-    for (const res of INITIAL_RESULTS) {
-      await setDoc(doc(db, 'results', res.id), res);
+    if (!resultsInitialized) {
+      resultsInitialized = true;
+      for (const res of INITIAL_RESULTS) {
+        await setDoc(doc(db, 'results', res.id), res);
+      }
+      return INITIAL_RESULTS;
     }
-    return INITIAL_RESULTS;
+    return [];
   } catch (err) {
     console.error('Firestore getResults error:', err);
     return INITIAL_RESULTS;
@@ -517,6 +584,7 @@ export const getResults = async (): Promise<ResultItem[]> => {
 export const saveResult = async (result: ResultItem): Promise<void> => {
   const updatedResult = { ...result, updatedAt: new Date().toISOString() };
   try {
+    resultsInitialized = true;
     await setDoc(doc(db, 'results', result.id), updatedResult);
   } catch (err) {
     console.error('Firestore saveResult error:', err);
@@ -525,6 +593,7 @@ export const saveResult = async (result: ResultItem): Promise<void> => {
 
 export const deleteResult = async (id: string): Promise<void> => {
   try {
+    resultsInitialized = true;
     await deleteDoc(doc(db, 'results', id));
   } catch (err) {
     console.error('Firestore deleteResult error:', err);
@@ -573,12 +642,19 @@ export const subscribeResultsConfig = (callback: (config: ResultsConfig) => void
 export const subscribeResults = (callback: (results: ResultItem[]) => void) => {
   try {
     const q = query(collection(db, 'results'), orderBy('rank', 'asc'));
-    return onSnapshot(q, (snapshot) => {
+    return onSnapshot(q, async (snapshot) => {
       if (!snapshot.empty) {
+        resultsInitialized = true;
         const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as ResultItem));
         callback(list);
-      } else {
+      } else if (!resultsInitialized) {
+        resultsInitialized = true;
+        for (const res of INITIAL_RESULTS) {
+          await setDoc(doc(db, 'results', res.id), res);
+        }
         callback(INITIAL_RESULTS);
+      } else {
+        callback([]);
       }
     }, (err) => {
       console.error('Error in subscribeResults snapshot:', err);
