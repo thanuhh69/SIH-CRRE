@@ -50,7 +50,8 @@ import {
   deleteSamplePPT,
   getParticipationMetrics,
   subscribeParticipationMetrics,
-  saveParticipationMetrics
+  saveParticipationMetrics,
+  purgeDemoRecords
 } from '@/lib/firestore';
 import { 
   TeamRegistration, 
@@ -201,6 +202,7 @@ export default function AdminDashboardPage() {
   }, [currentUser]);
 
   const loadAllAdminData = async () => {
+    await purgeDemoRecords();
     const regs = await getRegistrations();
     setRegistrations(regs);
 

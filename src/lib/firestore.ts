@@ -35,80 +35,17 @@ import {
 // Production Firebase is always enabled with central sih-crre backend
 const isFirebaseConfigured = () => true;
 
-// Initial Registrations dataset for seeding
-const INITIAL_REGISTRATIONS: TeamRegistration[] = [
-  {
-    id: 'SIH-2026-1001',
-    teamName: 'InnovateX CRR',
-    leaderName: 'K. Sai Teja',
-    leaderEmail: 'saiteja@sircrrcoestd.in',
-    leaderPhone: '+91 98765 43210',
-    department: 'Computer Science & Engineering',
-    year: '4th Year',
-    problemStatementId: 'SIH1284',
-    problemStatementTitle: 'AI-Driven Smart Water Quality Monitoring',
-    facultyMentor: 'Dr. V. S. N. Murthy (HOD CSE)',
-    members: [
-      { name: 'K. Sai Teja', email: 'saiteja@sircrrcoestd.in', phone: '+91 9876543210', rollNumber: '21B91A0501', department: 'CSE', year: '4th Year', isLeader: true },
-      { name: 'P. Anusha', email: 'anusha@sircrrcoestd.in', phone: '+91 9876543211', rollNumber: '21B91A0502', department: 'CSE', year: '4th Year' },
-    ],
-    status: 'approved',
-    submittedAt: '2026-08-10T10:30:00.000Z'
+// Purge any legacy demo mock records from Firestore
+export const purgeDemoRecords = async (): Promise<void> => {
+  try {
+    await deleteDoc(doc(db, 'registrations', 'SIH-2026-1001'));
+    await deleteDoc(doc(db, 'results', 'SIH-2026-1001'));
+    await deleteDoc(doc(db, 'results', 'SIH-2026-1002'));
+    await deleteDoc(doc(db, 'results', 'SIH-2026-1003'));
+  } catch (err) {
+    console.error('Error purging demo records:', err);
   }
-];
-
-// Initial Results dataset for seeding
-const INITIAL_RESULTS: ResultItem[] = [
-  {
-    id: 'SIH-2026-1001',
-    teamId: 'SIH-2026-1001',
-    teamName: 'InnovateX CRR',
-    problemStatement: 'AI-Driven Smart Water Quality Monitoring',
-    problemStatementId: 'SIH1284',
-    branch: 'Computer Science & Engineering',
-    score: 95.5,
-    rank: 1,
-    status: 'Winner',
-    remarks: 'Outstanding IoT hardware prototype and real-time dashboard implementation.',
-    members: [
-      { name: 'K. Sai Teja', email: 'saiteja@sircrrcoestd.in', phone: '+91 9876543210', rollNumber: '21B91A0501', department: 'CSE', year: '4th Year', isLeader: true },
-      { name: 'P. Anusha', email: 'anusha@sircrrcoestd.in', phone: '+91 9876543211', rollNumber: '21B91A0502', department: 'CSE', year: '4th Year' }
-    ],
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: 'SIH-2026-1002',
-    teamId: 'SIH-2026-1002',
-    teamName: 'CyberShields CRR',
-    problemStatement: 'Automated Vulnerability Detection in Government Web Portals',
-    problemStatementId: 'SIH1290',
-    branch: 'Information Technology',
-    score: 92.0,
-    rank: 2,
-    status: 'Runner-up',
-    remarks: 'Excellent security audit framework and automated zero-day exploit scanner.',
-    members: [
-      { name: 'M. Rahul', email: 'rahul@sircrrcoestd.in', phone: '+91 9876543212', rollNumber: '21B91A1205', department: 'IT', year: '4th Year', isLeader: true }
-    ],
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: 'SIH-2026-1003',
-    teamId: 'SIH-2026-1003',
-    teamName: 'AgriTech Innovators',
-    problemStatement: 'Smart Crop Disease Identification using Drone Imaging',
-    problemStatementId: 'SIH1305',
-    branch: 'Electronics & Communication Engineering',
-    score: 89.5,
-    rank: 3,
-    status: 'Finalist',
-    remarks: 'High accuracy AI model running on edge microcontrollers for offline farming.',
-    members: [
-      { name: 'V. Divya', email: 'divya@sircrrcoestd.in', phone: '+91 9876543213', rollNumber: '22B91A0410', department: 'ECE', year: '3rd Year', isLeader: true }
-    ],
-    updatedAt: new Date().toISOString()
-  }
-];
+};
 
 const INITIAL_RESULTS_CONFIG: ResultsConfig = {
   published: false,
