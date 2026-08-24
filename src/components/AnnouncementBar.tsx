@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Bell, ArrowRight, AlertCircle } from 'lucide-react';
-import { getAnnouncements } from '@/lib/firestore';
+import { getAnnouncements, subscribeAnnouncements } from '@/lib/firestore';
 import { Announcement } from '@/types';
 
 export default function AnnouncementBar() {
@@ -13,6 +13,10 @@ export default function AnnouncementBar() {
     getAnnouncements().then(data => {
       setAnnouncements(data.filter(a => a.active));
     });
+    const unsubscribe = subscribeAnnouncements(data => {
+      setAnnouncements(data.filter(a => a.active));
+    });
+    return () => unsubscribe();
   }, []);
 
   if (announcements.length === 0) return null;

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { getAlumni } from '@/lib/firestore';
+import { getAlumni, subscribeAlumni } from '@/lib/firestore';
 import { Alumni } from '@/types';
 import { Trophy, Search, User, Filter, Award, Sparkles } from 'lucide-react';
 
@@ -14,6 +14,8 @@ export default function AlumniPage() {
 
   useEffect(() => {
     getAlumni().then(data => setAlumniList(data));
+    const unsubscribe = subscribeAlumni(data => setAlumniList(data));
+    return () => unsubscribe();
   }, []);
 
   const departments = ['ALL', ...Array.from(new Set(alumniList.map(a => a.department)))];

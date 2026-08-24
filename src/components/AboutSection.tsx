@@ -23,6 +23,8 @@ export default function AboutSection() {
 
   useEffect(() => {
     getMainVideo().then(data => setVideoData(data));
+    const unsubscribe = subscribeMainVideo(data => setVideoData(data));
+    return () => unsubscribe();
   }, []);
 
   const getYouTubeEmbedUrl = (url: string) => {

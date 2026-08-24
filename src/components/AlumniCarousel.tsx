@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
-import { getAlumni } from '@/lib/firestore';
+import { getAlumni, subscribeAlumni } from '@/lib/firestore';
 import { Alumni } from '@/types';
 import { Trophy, ChevronLeft, ChevronRight, ArrowRight, User, Sparkles } from 'lucide-react';
 
@@ -13,6 +13,8 @@ export default function AlumniCarousel() {
 
   useEffect(() => {
     getAlumni().then(data => setAlumniList(data));
+    const unsubscribe = subscribeAlumni(data => setAlumniList(data));
+    return () => unsubscribe();
   }, []);
 
   const totalItems = alumniList.length;

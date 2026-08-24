@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { getEventDates } from '@/lib/firestore';
+import { getEventDates, subscribeEventDates } from '@/lib/firestore';
 import { EventDate } from '@/types';
 import { Calendar, Clock, MapPin, AlertCircle, FileText } from 'lucide-react';
 
@@ -10,6 +10,8 @@ export default function ImportantDates() {
 
   useEffect(() => {
     getEventDates().then(data => setEvents(data));
+    const unsubscribe = subscribeEventDates(data => setEvents(data));
+    return () => unsubscribe();
   }, []);
 
   return (

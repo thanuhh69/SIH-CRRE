@@ -13,30 +13,41 @@ import {
 import { auth } from '@/lib/firebase';
 import { 
   getRegistrations, 
+  subscribeRegistrations,
   updateRegistrationStatus, 
   deleteRegistration, 
   getAlumni, 
+  subscribeAlumni,
   saveAlumni, 
   deleteAlumni,
   getProblemStatements,
+  subscribeProblemStatements,
   saveProblemStatement,
   deleteProblemStatement,
   getAnnouncements,
+  subscribeAnnouncements,
   saveAnnouncement,
   deleteAnnouncement,
   getEventDates,
+  subscribeEventDates,
   saveEventDate,
+  deleteEventDate,
   getMainVideo,
+  subscribeMainVideo,
   saveMainVideo,
   getResults,
+  subscribeResults,
   saveResult,
   deleteResult,
   getResultsConfig,
+  subscribeResultsConfig,
   updateResultsConfig,
   getSamplePPT,
+  subscribeSamplePPT,
   saveSamplePPT,
   deleteSamplePPT,
   getParticipationMetrics,
+  subscribeParticipationMetrics,
   saveParticipationMetrics
 } from '@/lib/firestore';
 import { 
@@ -149,9 +160,35 @@ export default function AdminDashboardPage() {
   }, []);
 
   useEffect(() => {
-    if (currentUser) {
-      loadAllAdminData();
-    }
+    if (!currentUser) return;
+
+    // Load initial data
+    loadAllAdminData();
+
+    // Set up real-time subscribers for instant cross-device updates
+    const unsubRegs = subscribeRegistrations((list) => setRegistrations(list));
+    const unsubAlumni = subscribeAlumni((list) => setAlumniList(list));
+    const unsubPs = subscribeProblemStatements((list) => setProblems(list));
+    const unsubAnns = subscribeAnnouncements((list) => setAnnouncements(list));
+    const unsubEvts = subscribeEventDates((list) => setEvents(list));
+    const unsubVid = subscribeMainVideo((vid) => setVideoData(vid));
+    const unsubRes = subscribeResults((list) => setResultsList(list));
+    const unsubCfg = subscribeResultsConfig((cfg) => setResultsConfig(cfg));
+    const unsubPpt = subscribeSamplePPT((ppt) => setSamplePPT(ppt));
+    const unsubMet = subscribeParticipationMetrics((met) => setMetricsForm(met));
+
+    return () => {
+      unsubRegs();
+      unsubAlumni();
+      unsubPs();
+      unsubAnns();
+      unsubEvts();
+      unsubVid();
+      unsubRes();
+      unsubCfg();
+      unsubPpt();
+      unsubMet();
+    };
   }, [currentUser]);
 
   const loadAllAdminData = async () => {
