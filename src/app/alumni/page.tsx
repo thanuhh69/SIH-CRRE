@@ -40,9 +40,9 @@ export default function AlumniPage() {
         <div className="bg-college-dark text-white py-12 border-b-4 border-college-gold">
           <div className="max-w-7xl mx-auto px-4 flex flex-col items-center justify-center text-center space-y-3">
             <img 
-              src="/sih-logo.png" 
+              src="https://www.sih.gov.in/img/sih2022-logo.png" 
               alt="Smart India Hackathon Official Logo" 
-              className="h-16 sm:h-20 w-auto bg-white p-2 rounded-xl border border-amber-300 shadow-md object-contain" 
+              className="h-14 sm:h-16 w-auto bg-white p-2 rounded-lg border border-amber-300 shadow-md object-contain" 
             />
             <span className="text-xs font-mono font-bold text-college-gold tracking-widest uppercase bg-college-gold/10 px-3 py-1 rounded border border-college-gold/30">
               Sir C.R. Reddy College of Engineering

@@ -151,18 +151,20 @@ export default function Hero() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="lg:col-span-5 flex justify-center mt-4 lg:mt-0"
           >
-            <div className="w-full max-w-sm sm:max-w-md bg-white/5 border border-white/10 rounded-xl p-4 sm:p-5 backdrop-blur-sm shadow-2xl relative flex flex-col items-center hover:border-college-gold/40 transition-colors">
+            <div className="w-full max-w-sm sm:max-w-md bg-college-dark/80 backdrop-blur-md p-6 sm:p-8 rounded-2xl border-2 border-college-gold/40 shadow-2xl relative flex flex-col items-center hover:border-college-gold transition-all">
               <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-college-navy/90 px-2.5 py-1 rounded text-[10px] text-college-gold font-mono font-semibold border border-college-gold/30">
                 <Sparkles className="w-3 h-3 text-college-gold animate-pulse" />
                 <span>OFFICIAL SIH 2026 EMBLEM</span>
               </div>
-              <div className="w-full flex items-center justify-center gap-4 my-2 sm:my-3 pt-6 animate-float">
+              
+              <div className="w-full bg-white p-5 rounded-xl shadow-inner border border-amber-200 flex items-center justify-center my-3 pt-6 animate-float max-w-[280px] sm:max-w-[320px] mx-auto">
                 <img
-                  src="/sih-logo.png"
-                  alt="Official SIH Lightbulb Logo"
-                  className="max-h-48 sm:max-h-64 object-contain filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] hover:scale-105 transition-transform"
+                  src="https://www.sih.gov.in/img/sih2022-logo.png"
+                  alt="Smart India Hackathon 2026 Official Crest Emblem"
+                  className="max-h-40 sm:max-h-48 object-contain hover:scale-105 transition-transform"
                 />
               </div>
+
               <div className="text-center text-[11px] text-slate-300 font-serif font-bold tracking-wide mt-2">
                 Sir C.R. Reddy College of Engineering (Autonomous)
               </div>
