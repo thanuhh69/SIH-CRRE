@@ -348,27 +348,41 @@ export default function AdminDashboardPage() {
   // Save Result Handler
   const handleSaveResult = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingResult?.teamId || !editingResult?.teamName) return;
+    if (!editingResult?.teamId?.trim()) {
+      alert('Please enter or select a Team ID / Registration Code.');
+      return;
+    }
+    if (!editingResult?.teamName?.trim()) {
+      alert('Please enter the Team Name.');
+      return;
+    }
 
-    const itemToSave: ResultItem = {
-      id: editingResult.teamId,
-      teamId: editingResult.teamId,
-      teamName: editingResult.teamName,
-      problemStatement: editingResult.problemStatement || 'SIH Project',
-      problemStatementId: editingResult.problemStatementId || 'SIH1000',
-      branch: editingResult.branch || 'Computer Science & Engineering',
-      score: Number(editingResult.score) || 0,
-      rank: Number(editingResult.rank) || 1,
-      status: (editingResult.status as any) || 'Qualified',
-      remarks: editingResult.remarks || '',
-      members: editingResult.members || [],
-      updatedAt: new Date().toISOString(),
-      updatedBy: currentUser?.email || 'Admin'
-    };
+    try {
+      const itemToSave: ResultItem = {
+        id: editingResult.teamId.trim(),
+        teamId: editingResult.teamId.trim(),
+        teamName: editingResult.teamName.trim(),
+        problemStatement: editingResult.problemStatement?.trim() || 'SIH Project',
+        problemStatementId: editingResult.problemStatementId?.trim() || 'SIH1000',
+        branch: editingResult.branch?.trim() || 'Computer Science & Engineering',
+        score: Number(editingResult.score) || 0,
+        rank: Number(editingResult.rank) || 1,
+        status: (editingResult.status as any) || 'Qualified',
+        remarks: editingResult.remarks?.trim() || '',
+        members: editingResult.members || [],
+        updatedAt: new Date().toISOString(),
+        updatedBy: currentUser?.email || 'Admin Committee'
+      };
 
-    await saveResult(itemToSave);
-    setEditingResult(null);
-    loadAllAdminData();
+      await saveResult(itemToSave);
+      setResultsList(prev => [...prev.filter(r => r.id !== itemToSave.id), itemToSave]);
+      setEditingResult(null);
+      await loadAllAdminData();
+      alert('Team result & score record saved successfully!');
+    } catch (err) {
+      console.error('Error saving result record:', err);
+      alert('Failed to save result record.');
+    }
   };
 
   // Toggle Result Publication
@@ -1623,21 +1637,83 @@ export default function AdminDashboardPage() {
                 Enter / Edit Team Result & Score
               </h3>
 
+              {registrations.length > 0 && (
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded space-y-1">
+                  <label className="font-bold text-college-navy block">Quick Select Registered Team (Auto-Fills Details):</label>
+                  <select
+                    value={editingResult.teamId || ''}
+                    onChange={e => {
+                      const selectedId = e.target.value;
+                      const matched = registrations.find(r => r.id === selectedId);
+                      if (matched) {
+                        setEditingResult({
+                          ...editingResult,
+                          teamId: matched.id,
+                          teamName: matched.teamName,
+                          branch: matched.department,
+                          problemStatement: matched.problemStatementTitle,
+                          problemStatementId: matched.problemStatementId,
+                          members: matched.members
+                        });
+                      } else {
+                        setEditingResult({ ...editingResult, teamId: selectedId });
+                      }
+                    }}
+                    className="w-full p-2 border border-slate-300 rounded bg-white font-mono text-xs font-semibold text-slate-800"
+                  >
+                    <option value="">-- Choose Registered Team or Type Below --</option>
+                    {registrations.map(r => (
+                      <option key={r.id} value={r.id}>
+                        {r.id} - {r.teamName} ({r.department})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold">Team ID / Reg Code</label>
-                  <input required value={editingResult.teamId || ''} onChange={e => setEditingResult({ ...editingResult, teamId: e.target.value })} className="w-full p-2 border rounded font-mono" />
+                  <label className="font-bold">Team ID / Reg Code *</label>
+                  <input
+                    required
+                    placeholder="e.g. SIH-2026-3128"
+                    value={editingResult.teamId || ''}
+                    onChange={e => {
+                      const id = e.target.value;
+                      const matched = registrations.find(r => r.id.toLowerCase() === id.toLowerCase());
+                      if (matched) {
+                        setEditingResult({
+                          ...editingResult,
+                          teamId: id,
+                          teamName: matched.teamName,
+                          branch: matched.department,
+                          problemStatement: matched.problemStatementTitle,
+                          problemStatementId: matched.problemStatementId,
+                          members: matched.members
+                        });
+                      } else {
+                        setEditingResult({ ...editingResult, teamId: id });
+                      }
+                    }}
+                    className="w-full p-2 border rounded font-mono"
+                  />
                 </div>
                 <div>
-                  <label className="font-bold">Team Name</label>
-                  <input required value={editingResult.teamName || ''} onChange={e => setEditingResult({ ...editingResult, teamName: e.target.value })} className="w-full p-2 border rounded" />
+                  <label className="font-bold">Team Name *</label>
+                  <input
+                    required
+                    placeholder="e.g. InnovateX CRR"
+                    value={editingResult.teamName || ''}
+                    onChange={e => setEditingResult({ ...editingResult, teamName: e.target.value })}
+                    className="w-full p-2 border rounded"
+                  />
                 </div>
                 <div>
-                  <label className="font-bold">Department / Branch</label>
+                  <label className="font-bold">Department / Branch *</label>
                   <input required value={editingResult.branch || ''} onChange={e => setEditingResult({ ...editingResult, branch: e.target.value })} className="w-full p-2 border rounded" />
                 </div>
                 <div>
-                  <label className="font-bold">National Rank</label>
+                  <label className="font-bold">National Rank *</label>
                   <input type="number" min={1} required value={editingResult.rank || 1} onChange={e => setEditingResult({ ...editingResult, rank: parseInt(e.target.value) })} className="w-full p-2 border rounded font-mono font-bold" />
                 </div>
                 <div>
