@@ -2,9 +2,21 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'SIH Internal Hackathon 2026 | Sir C.R. Reddy College of Engineering (Autonomous)',
-  description: 'Official Smart India Hackathon (SIH) 2026 Internal Hackathon Portal for Sir C.R. Reddy College of Engineering (Autonomous), Eluru, Andhra Pradesh.',
+  metadataBase: new URL('https://sih.crre.site'),
+  title: 'SIH 2026 – Sir C. R. Reddy College of Engineering',
+  description: 'Smart India Hackathon 2026 Internal Hackathon Portal – Sir C. R. Reddy College of Engineering',
   keywords: 'SIH 2026, Smart India Hackathon, Sir C.R. Reddy College of Engineering, CRR, Eluru, Internal Hackathon, Innovation Cell, Engineering College',
+  alternates: {
+    canonical: 'https://sih.crre.site/',
+  },
+  openGraph: {
+    title: 'SIH 2026 – Sir C. R. Reddy College of Engineering',
+    description: 'Smart India Hackathon 2026 Internal Hackathon Portal – Sir C. R. Reddy College of Engineering',
+    url: 'https://sih.crre.site/',
+    siteName: 'SIH 2026 CRR Portal',
+    locale: 'en_US',
+    type: 'website',
+  },
 };
 
 export default function RootLayout({
