@@ -19,9 +19,9 @@ export default function RegisterPage() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/10 pb-6">
               <div className="flex items-center gap-4">
                 <img 
-                  src="https://www.sih.gov.in/img/sih2022-logo.png" 
+                  src="/sih-logo.png" 
                   alt="Smart India Hackathon Official Logo" 
-                  className="h-14 sm:h-16 w-auto bg-white p-2 rounded-lg border border-amber-300 shadow-md shrink-0 object-contain" 
+                  className="h-16 sm:h-20 w-auto object-contain filter drop-shadow-md shrink-0" 
                 />
                 <div>
                   <span className="text-xs font-mono font-bold text-college-gold tracking-widest uppercase bg-college-gold/10 px-3 py-1 rounded border border-college-gold/30">

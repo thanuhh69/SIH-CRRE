@@ -157,11 +157,11 @@ export default function Hero() {
                 <span>OFFICIAL SIH 2026 EMBLEM</span>
               </div>
               
-              <div className="w-full bg-white p-5 rounded-xl shadow-inner border border-amber-200 flex items-center justify-center my-3 pt-6 animate-float max-w-[280px] sm:max-w-[320px] mx-auto">
+              <div className="w-full flex items-center justify-center my-3 pt-6 animate-float max-w-[280px] sm:max-w-[320px] mx-auto">
                 <img
-                  src="https://www.sih.gov.in/img/sih2022-logo.png"
-                  alt="Smart India Hackathon 2026 Official Crest Emblem"
-                  className="max-h-40 sm:max-h-48 object-contain hover:scale-105 transition-transform"
+                  src="/sih-logo.png"
+                  alt="Smart India Hackathon 2026 Official Logo"
+                  className="max-h-48 sm:max-h-60 object-contain filter drop-shadow-[0_10px_25px_rgba(0,0,0,0.5)] hover:scale-105 transition-transform"
                 />
               </div>
 
