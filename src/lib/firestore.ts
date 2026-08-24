@@ -42,6 +42,9 @@ export const purgeDemoRecords = async (): Promise<void> => {
     await deleteDoc(doc(db, 'results', 'SIH-2026-1001'));
     await deleteDoc(doc(db, 'results', 'SIH-2026-1002'));
     await deleteDoc(doc(db, 'results', 'SIH-2026-1003'));
+    await deleteDoc(doc(db, 'slideshowImages', 'slide-1'));
+    await deleteDoc(doc(db, 'slideshowImages', 'slide-2'));
+    await deleteDoc(doc(db, 'slideshowImages', 'slide-3'));
   } catch (err) {
     console.error('Error purging demo records:', err);
   }
@@ -712,20 +715,12 @@ export const getSlideshowImages = async (): Promise<SlideshowImage[]> => {
   try {
     const snapshot = await getDocs(collection(db, 'slideshowImages'));
     if (!snapshot.empty) {
-      slideshowInitialized = true;
       return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as SlideshowImage));
-    }
-    if (!slideshowInitialized) {
-      slideshowInitialized = true;
-      for (const slide of INITIAL_SLIDESHOW_IMAGES) {
-        await setDoc(doc(db, 'slideshowImages', slide.id), slide);
-      }
-      return INITIAL_SLIDESHOW_IMAGES;
     }
     return [];
   } catch (err) {
     console.error('Firestore getSlideshowImages error:', err);
-    return INITIAL_SLIDESHOW_IMAGES;
+    return [];
   }
 };
 
