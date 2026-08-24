@@ -656,7 +656,8 @@ export const getParticipationMetrics = async (): Promise<ParticipationMetrics> =
 
 export const saveParticipationMetrics = async (metrics: ParticipationMetrics): Promise<void> => {
   try {
-    await setDoc(doc(db, 'metrics', 'main'), metrics);
+    const cleaned = JSON.parse(JSON.stringify(metrics));
+    await setDoc(doc(db, 'metrics', 'main'), cleaned);
   } catch (err) {
     console.error('Firestore saveParticipationMetrics error:', err);
   }

@@ -237,13 +237,22 @@ export default function AdminDashboardPage() {
   const handleSaveMetrics = async (e: React.FormEvent) => {
     e.preventDefault();
     const updatedMetrics: ParticipationMetrics = {
-      ...metricsForm,
+      teamsParticipated: metricsForm.teamsParticipated || '50+',
+      studentsInvolved: metricsForm.studentsInvolved || '300+',
+      innovativeSolutions: metricsForm.innovativeSolutions || '45+',
+      sihAlumni: metricsForm.sihAlumni || '120+',
       updatedAt: new Date().toISOString(),
       updatedBy: currentUser?.email || 'Admin Committee'
     };
-    await saveParticipationMetrics(updatedMetrics);
-    setMetricsSaved(true);
-    setTimeout(() => setMetricsSaved(false), 4000);
+    try {
+      await saveParticipationMetrics(updatedMetrics);
+      setMetricsForm(updatedMetrics);
+      setMetricsSaved(true);
+      setTimeout(() => setMetricsSaved(false), 4000);
+    } catch (err) {
+      console.error('Error saving metrics:', err);
+      alert('Failed to update metrics.');
+    }
   };
 
   // Firebase Email/Password Auth Handlers
