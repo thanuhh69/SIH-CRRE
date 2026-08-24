@@ -812,17 +812,10 @@ export const getSlideshowImages = async (): Promise<SlideshowImage[]> => {
 
 export const subscribeSlideshowImages = (callback: (images: SlideshowImage[]) => void) => {
   try {
-    return onSnapshot(collection(db, 'slideshowImages'), async (snapshot) => {
+    return onSnapshot(collection(db, 'slideshowImages'), (snapshot) => {
       if (!snapshot.empty) {
-        slideshowInitialized = true;
         const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as SlideshowImage));
         callback(list);
-      } else if (!slideshowInitialized) {
-        slideshowInitialized = true;
-        for (const slide of INITIAL_SLIDESHOW_IMAGES) {
-          await setDoc(doc(db, 'slideshowImages', slide.id), slide);
-        }
-        callback(INITIAL_SLIDESHOW_IMAGES);
       } else {
         callback([]);
       }

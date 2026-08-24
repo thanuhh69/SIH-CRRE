@@ -95,7 +95,8 @@ import {
   Mail,
   RefreshCw,
   Award,
-  Sparkles
+  Sparkles,
+  ExternalLink
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
@@ -1331,14 +1332,33 @@ export default function AdminDashboardPage() {
 
           {/* TAB 5: PROBLEM STATEMENTS CRUD */}
           {activeTab === 'problems' && (
-            <div className="p-6 space-y-4">
+            <div className="p-6 space-y-5">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-amber-50 border-2 border-college-gold p-4 rounded-xl shadow-xs">
+                <div>
+                  <h4 className="font-serif font-bold text-sm text-college-navy flex items-center gap-2">
+                    <ExternalLink className="w-4 h-4 text-college-gold" /> Official SIH 2026 Problem Statements Portal
+                  </h4>
+                  <p className="text-xs text-slate-600 mt-1">
+                    Students exploring problem statements on the website are automatically redirected to the official government portal: <code className="bg-amber-100 px-1 py-0.5 rounded font-mono text-[11px] text-amber-900 font-bold">https://sih.gov.in/sih2026PS</code>
+                  </p>
+                </div>
+                <a
+                  href="https://sih.gov.in/sih2026PS"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 bg-college-navy hover:bg-college-blue text-white px-4 py-2 rounded-lg text-xs font-bold shrink-0 transition-colors border border-college-gold/30 shadow-sm"
+                >
+                  <span>Open SIH PS Portal ↗</span>
+                </a>
+              </div>
+
               <div className="flex justify-between items-center">
-                <h3 className="font-serif font-bold text-base text-college-navy">SIH Problem Statements Library</h3>
+                <h3 className="font-serif font-bold text-base text-college-navy">Campus SIH Problem Statements Reference Library</h3>
                 <button
                   onClick={() => setEditingPs({ psId: `SIH${Math.floor(1000 + Math.random() * 9000)}`, title: '', organization: 'Ministry of Education', category: 'Software', domain: 'Smart Education', description: '' })}
                   className="inline-flex items-center gap-1 bg-college-navy text-white px-3.5 py-2 rounded text-xs font-bold hover:bg-college-blue"
                 >
-                  <Plus className="w-4 h-4 text-college-gold" /> Add Problem Statement
+                  <Plus className="w-4 h-4 text-college-gold" /> Add Reference Problem Statement
                 </button>
               </div>
 
