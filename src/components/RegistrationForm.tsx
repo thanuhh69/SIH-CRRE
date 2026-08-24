@@ -102,8 +102,16 @@ export default function RegistrationForm() {
     setPptError(null);
 
     if (!teamName || !leaderName || !leaderEmail || !leaderPhone || !leaderRollNumber) {
-      alert('Please fill in all mandatory Team Leader fields.');
+      alert('Please fill in all mandatory Team Leader fields (Name, Email, Mobile Number, Roll Number).');
       return;
+    }
+
+    for (let i = 0; i < members.length; i++) {
+      const m = members[i];
+      if (!m.name || !m.email || !m.phone || !m.rollNumber) {
+        alert(`Please fill in all mandatory details (Full Name, Email, Mobile Number, Roll Number) for Member #${i + 2}.`);
+        return;
+      }
     }
 
     if (!pptFile) {
@@ -204,6 +212,7 @@ export default function RegistrationForm() {
             <div>
               <span className="text-slate-400">Team Leader:</span>
               <p className="font-bold text-white text-sm">{submittedRegistration.leaderName}</p>
+              <p className="text-[11px] font-mono text-college-gold">📞 {submittedRegistration.leaderPhone}</p>
             </div>
             <div>
               <span className="text-slate-400">Department:</span>
@@ -212,6 +221,10 @@ export default function RegistrationForm() {
             <div>
               <span className="text-slate-400">Problem Statement ID:</span>
               <p className="text-college-gold font-mono font-semibold">{submittedRegistration.problemStatementId}</p>
+            </div>
+            <div>
+              <span className="text-slate-400">Total Team Members:</span>
+              <p className="text-white font-semibold">{submittedRegistration.members?.length || 1} Members</p>
             </div>
             {submittedRegistration.pptFileName && (
               <div className="md:col-span-2 pt-2 border-t border-white/10 flex items-center justify-between">
@@ -532,31 +545,59 @@ export default function RegistrationForm() {
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                <input
-                  type="text"
-                  required
-                  placeholder="Full Name"
-                  value={member.name}
-                  onChange={e => handleMemberChange(index, 'name', e.target.value)}
-                  className="px-3 py-1.5 text-xs border border-slate-300 rounded bg-white"
-                />
-                <input
-                  type="email"
-                  required
-                  placeholder="Email ID"
-                  value={member.email}
-                  onChange={e => handleMemberChange(index, 'email', e.target.value)}
-                  className="px-3 py-1.5 text-xs border border-slate-300 rounded bg-white"
-                />
-                <input
-                  type="text"
-                  required
-                  placeholder="Roll Number"
-                  value={member.rollNumber}
-                  onChange={e => handleMemberChange(index, 'rollNumber', e.target.value)}
-                  className="px-3 py-1.5 text-xs border border-slate-300 rounded bg-white font-mono"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-700 mb-0.5">
+                    Full Name <span className="text-red-600">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Full Name"
+                    value={member.name}
+                    onChange={e => handleMemberChange(index, 'name', e.target.value)}
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded bg-white outline-none focus:ring-1 focus:ring-college-navy"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-700 mb-0.5">
+                    Email ID <span className="text-red-600">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="student@sircrrcoestd.in"
+                    value={member.email}
+                    onChange={e => handleMemberChange(index, 'email', e.target.value)}
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded bg-white outline-none focus:ring-1 focus:ring-college-navy"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-700 mb-0.5">
+                    Mobile Number <span className="text-red-600">*</span>
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="+91 9876543210"
+                    value={member.phone}
+                    onChange={e => handleMemberChange(index, 'phone', e.target.value)}
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded bg-white outline-none focus:ring-1 focus:ring-college-navy"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-700 mb-0.5">
+                    Roll Number <span className="text-red-600">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. 21B91A0502"
+                    value={member.rollNumber}
+                    onChange={e => handleMemberChange(index, 'rollNumber', e.target.value)}
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded bg-white font-mono outline-none focus:ring-1 focus:ring-college-navy"
+                  />
+                </div>
               </div>
             </div>
           ))}
