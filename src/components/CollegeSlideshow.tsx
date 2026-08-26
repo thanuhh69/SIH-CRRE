@@ -34,17 +34,23 @@ const DEFAULT_SLIDES: SlideshowImage[] = [
 ];
 
 export default function CollegeSlideshow() {
-  const [images, setImages] = useState<SlideshowImage[]>([]);
+  const [images, setImages] = useState<SlideshowImage[]>(DEFAULT_SLIDES);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     getSlideshowImages().then(list => {
-      if (list && list.length > 0) setImages(list);
+      const valid = (list || []).filter(item => item && item.url && item.url.trim().length > 0);
+      if (valid.length > 0) setImages(valid);
       else setImages(DEFAULT_SLIDES);
+    }).catch(err => {
+      console.warn('Firestore slideshow fetch error, using defaults:', err);
+      setImages(DEFAULT_SLIDES);
     });
+
     const unsubscribe = subscribeSlideshowImages((list) => {
-      if (list && list.length > 0) setImages(list);
+      const valid = (list || []).filter(item => item && item.url && item.url.trim().length > 0);
+      if (valid.length > 0) setImages(valid);
       else setImages(DEFAULT_SLIDES);
     });
     return () => unsubscribe();
@@ -90,7 +96,7 @@ export default function CollegeSlideshow() {
 
         {/* Main Slideshow Container */}
         <div 
-          className="relative w-full max-w-5xl mx-auto rounded-2xl overflow-hidden shadow-2xl border-2 border-college-gold/40 bg-black aspect-[16/9] sm:aspect-[21/9]"
+          className="relative w-full max-w-5xl mx-auto rounded-2xl overflow-hidden shadow-2xl border-2 border-college-gold/40 bg-slate-950 aspect-[16/9] sm:aspect-[21/9] min-h-[280px] sm:min-h-[380px]"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
@@ -106,6 +112,9 @@ export default function CollegeSlideshow() {
               <img
                 src={currentSlide.url}
                 alt={currentSlide.title || 'Sir C.R. Reddy CoE Campus Gallery'}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=1200';
+                }}
                 className="w-full h-full object-cover object-center"
               />
               {/* Gradient Dark Overlay for Typography Contrast */}
