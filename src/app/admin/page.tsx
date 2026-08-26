@@ -65,7 +65,7 @@ import {
   SamplePPTResource,
   ParticipationMetrics
 } from '@/types';
-import { uploadFileWithFallback } from '@/lib/storage';
+import { uploadFileWithFallback, getCloudinaryDownloadUrl } from '@/lib/storage';
 import { 
   Lock, 
   KeyRound, 
@@ -593,7 +593,7 @@ export default function AdminDashboardPage() {
 
   const exportCSV = () => {
     if (registrations.length === 0) return;
-    const headers = ['Registration ID', 'Team Name', 'Leader Name', 'Leader Email', 'Leader Phone', 'Department', 'Year', 'PS ID', 'PS Title', 'Status', 'Submitted At'];
+    const headers = ['Registration ID', 'Team Name', 'Leader Name', 'Leader Email', 'Leader Phone', 'Department', 'Year', 'PS ID', 'PS Title', 'Status', 'Submitted At', 'PPT File Name', 'Cloudinary PPT URL'];
     const rows = registrations.map(r => [
       r.id,
       `"${r.teamName}"`,
@@ -605,7 +605,9 @@ export default function AdminDashboardPage() {
       r.problemStatementId,
       `"${r.problemStatementTitle}"`,
       r.status,
-      r.submittedAt
+      r.submittedAt,
+      `"${r.pptFileName || ''}"`,
+      `"${r.pptUrl ? getCloudinaryDownloadUrl(r.pptUrl, r.pptFileName) : ''}"`
     ]);
 
     const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
@@ -752,9 +754,14 @@ export default function AdminDashboardPage() {
             <h1 className="font-serif font-bold text-2xl md:text-3xl text-white mt-1">
               College Steering & Admin Dashboard
             </h1>
-            <p className="text-slate-300 text-xs mt-1">
-              Authenticated Admin: <strong className="font-mono text-college-gold">{currentUser.email || 'Admin'}</strong>
-            </p>
+            <div className="flex flex-wrap items-center gap-3 mt-1">
+              <p className="text-slate-300 text-xs">
+                Authenticated Admin: <strong className="font-mono text-college-gold">{currentUser.email || 'Admin'}</strong>
+              </p>
+              <span className="text-[11px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                ☁️ Cloudinary API Active (dwzv8izif)
+              </span>
+            </div>
           </div>
 
           <button
@@ -923,6 +930,18 @@ export default function AdminDashboardPage() {
                             </button>
                           </td>
                           <td className="p-3 text-right space-x-1 whitespace-nowrap">
+                            {reg.pptUrl && (
+                              <a
+                                href={getCloudinaryDownloadUrl(reg.pptUrl, reg.pptFileName)}
+                                download={reg.pptFileName || `${reg.teamName}_PPT`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bg-amber-600 hover:bg-amber-700 text-white px-2 py-1 rounded text-[11px] font-bold inline-flex items-center gap-1 transition-colors"
+                                title="Download Team Presentation PPT from Cloudinary"
+                              >
+                                <FileText className="w-3.5 h-3.5" /> PPT
+                              </a>
+                            )}
                             <button
                               onClick={() => setSelectedReg(reg)}
                               className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 rounded text-[11px] font-bold"
@@ -1139,7 +1158,7 @@ export default function AdminDashboardPage() {
                       </div>
 
                       <a
-                        href={samplePPT.downloadURL}
+                        href={getCloudinaryDownloadUrl(samplePPT.downloadURL, samplePPT.fileName)}
                         download={samplePPT.fileName}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -1964,11 +1983,11 @@ export default function AdminDashboardPage() {
                   </div>
                   {selectedReg.pptUrl && (
                     <a
-                      href={selectedReg.pptUrl}
+                      href={getCloudinaryDownloadUrl(selectedReg.pptUrl, selectedReg.pptFileName)}
                       download={selectedReg.pptFileName}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-college-navy text-white px-3 py-1.5 rounded font-bold text-[11px] flex items-center gap-1"
+                      className="bg-college-navy text-white px-3 py-1.5 rounded font-bold text-[11px] flex items-center gap-1 hover:bg-college-blue transition-colors"
                     >
                       <Download className="w-3.5 h-3.5" /> Download PPT
                     </a>

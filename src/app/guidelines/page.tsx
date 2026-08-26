@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { 
@@ -12,8 +12,13 @@ import {
   Presentation, 
   Award, 
   Upload, 
-  AlertTriangle 
+  AlertTriangle,
+  Download,
+  FileText
 } from 'lucide-react';
+import { subscribeSamplePPT } from '@/lib/firestore';
+import { SamplePPTResource } from '@/types';
+import { getCloudinaryDownloadUrl } from '@/lib/storage';
 
 interface GuidelineItem {
   id: string;
@@ -24,6 +29,12 @@ interface GuidelineItem {
 
 export default function GuidelinesPage() {
   const [openSections, setOpenSections] = useState<string[]>(['eligibility', 'team-formation']);
+  const [samplePPT, setSamplePPT] = useState<SamplePPTResource | null>(null);
+
+  useEffect(() => {
+    const unsub = subscribeSamplePPT((ppt) => setSamplePPT(ppt));
+    return () => unsub();
+  }, []);
 
   const guidelines: GuidelineItem[] = [
     {
@@ -154,6 +165,21 @@ export default function GuidelinesPage() {
                 🏆 Total Prize Pool: ₹44,000
               </span>
             </div>
+
+            {samplePPT && samplePPT.published && (
+              <div className="pt-2">
+                <a
+                  href={getCloudinaryDownloadUrl(samplePPT.downloadURL, samplePPT.fileName)}
+                  download={samplePPT.fileName}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-college-gold hover:bg-college-goldLight text-college-dark px-5 py-2.5 rounded font-extrabold text-xs shadow-lg transition-all border border-amber-300 hover:scale-105"
+                >
+                  <Download className="w-4 h-4 text-college-dark" />
+                  <span>📥 DOWNLOAD OFFICIAL SAMPLE PPT ({samplePPT.fileName})</span>
+                </a>
+              </div>
+            )}
           </div>
         </div>
 

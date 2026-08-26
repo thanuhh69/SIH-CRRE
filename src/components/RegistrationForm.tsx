@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { createRegistration, getProblemStatements, subscribeSamplePPT } from '@/lib/firestore';
 import { ProblemStatement, TeamMember, TeamRegistration, SamplePPTResource } from '@/types';
+import { getCloudinaryDownloadUrl } from '@/lib/storage';
 import { OFFICIAL_SIH_PORTAL_URL } from '@/data/placeholder';
 import { 
   CheckCircle2, 
@@ -313,7 +314,7 @@ export default function RegistrationForm() {
 
             {samplePPT && samplePPT.published ? (
               <a
-                href={samplePPT.downloadURL}
+                href={getCloudinaryDownloadUrl(samplePPT.downloadURL, samplePPT.fileName)}
                 download={samplePPT.fileName}
                 target="_blank"
                 rel="noopener noreferrer"

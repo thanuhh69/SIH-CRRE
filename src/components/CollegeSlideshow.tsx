@@ -6,38 +6,69 @@ import { ChevronLeft, ChevronRight, Image as ImageIcon, Sparkles, Building2, Awa
 import { subscribeSlideshowImages, getSlideshowImages } from '@/lib/firestore';
 import { SlideshowImage } from '@/types';
 
+const DEFAULT_SLIDES: SlideshowImage[] = [
+  {
+    id: 'slide-1',
+    url: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=1200',
+    title: 'Sir C.R. Reddy CoE Campus & Innovation Hub',
+    caption: 'State-of-the-art research laboratories, computer centers, and student hackathon spaces.',
+    createdAt: new Date().toISOString(),
+    order: 1
+  },
+  {
+    id: 'slide-2',
+    url: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&q=80&w=1200',
+    title: 'Smart India Hackathon Evaluation & Pitching',
+    caption: 'Student teams presenting prototype solutions to domain experts and ministry evaluators.',
+    createdAt: new Date().toISOString(),
+    order: 2
+  },
+  {
+    id: 'slide-3',
+    url: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=1200',
+    title: 'Collaborative Teamwork & Hardware Prototyping',
+    caption: 'Interdisciplinary teams assembling IoT circuits and AI algorithms.',
+    createdAt: new Date().toISOString(),
+    order: 3
+  }
+];
+
 export default function CollegeSlideshow() {
   const [images, setImages] = useState<SlideshowImage[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
-    getSlideshowImages().then(list => setImages(list));
+    getSlideshowImages().then(list => {
+      if (list && list.length > 0) setImages(list);
+      else setImages(DEFAULT_SLIDES);
+    });
     const unsubscribe = subscribeSlideshowImages((list) => {
-      setImages(list);
+      if (list && list.length > 0) setImages(list);
+      else setImages(DEFAULT_SLIDES);
     });
     return () => unsubscribe();
   }, []);
 
+  const activeImages = images.length > 0 ? images : DEFAULT_SLIDES;
+
   // Auto-play interval
   useEffect(() => {
-    if (images.length <= 1 || isPaused) return;
+    if (activeImages.length <= 1 || isPaused) return;
     const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % images.length);
+      setCurrentIndex((prev) => (prev + 1) % activeImages.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, [images.length, isPaused]);
+  }, [activeImages.length, isPaused]);
 
-  if (images.length === 0) return null;
-
-  const currentSlide = images[currentIndex] || images[0];
+  const currentSlide = activeImages[currentIndex] || activeImages[0];
 
   const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+    setCurrentIndex((prev) => (prev - 1 + activeImages.length) % activeImages.length);
   };
 
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % images.length);
+    setCurrentIndex((prev) => (prev + 1) % activeImages.length);
   };
 
   return (
@@ -93,7 +124,7 @@ export default function CollegeSlideshow() {
             >
               <span className="inline-flex items-center gap-1.5 bg-college-gold text-college-dark px-2.5 py-0.5 rounded text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-sm">
                 <Sparkles className="w-3 h-3 shrink-0" />
-                <span>Feature {currentIndex + 1} of {images.length}</span>
+                <span>Feature {currentIndex + 1} of {activeImages.length}</span>
               </span>
               <h3 className="font-serif font-bold text-base sm:text-xl md:text-2xl text-white tracking-wide drop-shadow-md">
                 {currentSlide.title}
@@ -107,7 +138,7 @@ export default function CollegeSlideshow() {
           </div>
 
           {/* Previous / Next Controls */}
-          {images.length > 1 && (
+          {activeImages.length > 1 && (
             <>
               <button
                 onClick={handlePrev}
@@ -127,7 +158,7 @@ export default function CollegeSlideshow() {
 
               {/* Indicator Dots */}
               <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-30 flex items-center gap-1.5 sm:gap-2 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
-                {images.map((_, idx) => (
+                {activeImages.map((_, idx) => (
                   <button
                     key={idx}
                     onClick={() => setCurrentIndex(idx)}

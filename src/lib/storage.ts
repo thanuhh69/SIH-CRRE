@@ -1,6 +1,53 @@
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from './firebase';
 
+export const isCloudinaryActive = (): boolean => {
+  return true; // Cloudinary credentials are fully configured for 'dwzv8izif'
+};
+
+/**
+ * Uploads a file to Cloudinary via server API route /api/upload
+ */
+export const uploadToCloudinary = async (file: File, folder: string): Promise<string> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('folder', folder);
+
+  const response = await fetch('/api/upload', {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errData = await response.json().catch(() => ({}));
+    throw new Error(errData.error || `Upload failed with status code ${response.status}`);
+  }
+
+  const data = await response.json();
+  if (!data.success || !data.url) {
+    throw new Error(data.error || 'Invalid response from Cloudinary upload API');
+  }
+
+  return data.url;
+};
+
+/**
+ * Formats a Cloudinary file URL to trigger forced browser download for PPT / PDF / images
+ */
+export const getCloudinaryDownloadUrl = (url: string, customFileName?: string): string => {
+  if (!url) return '#';
+  
+  // If it's a Cloudinary media URL, insert attachment flag if not present
+  if (url.includes('cloudinary.com') && url.includes('/upload/')) {
+    if (!url.includes('fl_attachment')) {
+      const parts = url.split('/upload/');
+      return `${parts[0]}/upload/fl_attachment/${parts[1]}`;
+    }
+  }
+  
+  return url;
+};
+
 export const compressImageFile = (file: File, maxWidth = 1200, quality = 0.75): Promise<string> => {
   return new Promise((resolve) => {
     if (!file.type.startsWith('image/')) {
@@ -45,9 +92,19 @@ export const compressImageFile = (file: File, maxWidth = 1200, quality = 0.75): 
 };
 
 export const uploadFileWithFallback = async (
-  file: File, 
+  file: File,
   folder: 'alumni' | 'videos' | 'registration-files' | 'resources' | 'slideshow-images'
 ): Promise<string> => {
+  // 1. Primary: Cloudinary Server API Route
+  try {
+    const cloudinaryUrl = await uploadToCloudinary(file, folder);
+    console.log(`Successfully uploaded ${file.name} to Cloudinary:`, cloudinaryUrl);
+    return cloudinaryUrl;
+  } catch (err) {
+    console.warn(`Cloudinary API upload failed for ${file.name}, trying Firebase Storage fallback:`, err);
+  }
+
+  // 2. Secondary: Firebase Storage
   const isFirebaseConfigured =
     process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID &&
     process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== 'demo-project';
@@ -59,11 +116,11 @@ export const uploadFileWithFallback = async (
       const downloadUrl = await getDownloadURL(snapshot.ref);
       return downloadUrl;
     } catch (err) {
-      console.warn(`Firebase Storage upload to ${folder} failed, using data URL fallback:`, err);
+      console.warn(`Firebase Storage upload to ${folder} failed, using local fallback:`, err);
     }
   }
 
-  // Safe fallback with compression for images
+  // 3. Fallback: Data URL or local compression for images
   if (file.type.startsWith('image/')) {
     return compressImageFile(file, 1200, 0.75);
   }
@@ -82,4 +139,3 @@ export const uploadFileWithFallback = async (
     reader.readAsDataURL(file);
   });
 };
-

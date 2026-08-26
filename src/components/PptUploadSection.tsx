@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { Upload, FileText, CheckCircle2, AlertCircle, X, FileCheck, Sparkles } from 'lucide-react';
-import { uploadFileWithFallback } from '@/lib/storage';
+import { Upload, FileText, CheckCircle2, AlertCircle, X, FileCheck, Sparkles, Download } from 'lucide-react';
+import { uploadFileWithFallback, getCloudinaryDownloadUrl } from '@/lib/storage';
 
 interface PptUploadSectionProps {
   onFileSelected?: (file: File | null, fileUrl: string | null) => void;
@@ -22,6 +22,7 @@ export default function PptUploadSection({
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState<string>(initialFileName || '');
+  const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const validateAndSetFile = (file: File) => {
@@ -69,6 +70,7 @@ export default function PptUploadSection({
     setSelectedFile(null);
     setFileError(null);
     setUploadSuccess(false);
+    setUploadedFileUrl(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
     if (onFileSelected) onFileSelected(null, null);
   };
@@ -83,11 +85,12 @@ export default function PptUploadSection({
     setFileError(null);
 
     try {
-      // Upload using Firebase Storage / Fallback
+      // Upload using Cloudinary / Fallback
       const url = await uploadFileWithFallback(selectedFile, 'registration-files');
       setIsUploading(false);
       setUploadSuccess(true);
       setUploadedFileName(selectedFile.name);
+      setUploadedFileUrl(url);
 
       if (onUploadSuccess) {
         onUploadSuccess(url, selectedFile.name);
@@ -180,13 +183,26 @@ export default function PptUploadSection({
         </div>
       )}
 
-      {/* Success Notification Message */}
+      {/* Success Notification Message & Download Link */}
       {uploadSuccess && (
-        <div className="p-3.5 bg-emerald-50 border border-emerald-300 rounded text-xs text-emerald-900 flex items-center gap-2">
-          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-          <div>
-            <strong className="font-bold">PPT Uploaded Successfully!</strong> File <span className="font-mono font-semibold">{uploadedFileName}</span> is saved for your team's SIH entry.
+        <div className="p-3.5 bg-emerald-50 border border-emerald-300 rounded text-xs text-emerald-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+            <div>
+              <strong className="font-bold">PPT Uploaded to Cloudinary!</strong> File <span className="font-mono font-semibold">{uploadedFileName}</span> is stored securely.
+            </div>
           </div>
+          {uploadedFileUrl && (
+            <a
+              href={getCloudinaryDownloadUrl(uploadedFileUrl, uploadedFileName)}
+              target="_blank"
+              rel="noopener noreferrer"
+              download={uploadedFileName}
+              className="shrink-0 inline-flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-3 py-1.5 rounded text-xs transition-colors shadow-xs"
+            >
+              <Download className="w-3.5 h-3.5 text-white" /> Download PPT
+            </a>
+          )}
         </div>
       )}
 

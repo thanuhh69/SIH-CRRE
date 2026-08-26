@@ -42,9 +42,6 @@ export const purgeDemoRecords = async (): Promise<void> => {
     await deleteDoc(doc(db, 'results', 'SIH-2026-1001'));
     await deleteDoc(doc(db, 'results', 'SIH-2026-1002'));
     await deleteDoc(doc(db, 'results', 'SIH-2026-1003'));
-    await deleteDoc(doc(db, 'slideshowImages', 'slide-1'));
-    await deleteDoc(doc(db, 'slideshowImages', 'slide-2'));
-    await deleteDoc(doc(db, 'slideshowImages', 'slide-3'));
   } catch (err) {
     console.error('Error purging demo records:', err);
   }
@@ -716,23 +713,38 @@ export const getSlideshowImages = async (): Promise<SlideshowImage[]> => {
   try {
     const snapshot = await getDocs(collection(db, 'slideshowImages'));
     if (!snapshot.empty) {
+      slideshowInitialized = true;
       return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as SlideshowImage));
     }
-    return [];
+    if (!slideshowInitialized) {
+      slideshowInitialized = true;
+      for (const img of INITIAL_SLIDESHOW_IMAGES) {
+        await setDoc(doc(db, 'slideshowImages', img.id), img);
+      }
+      return INITIAL_SLIDESHOW_IMAGES;
+    }
+    return INITIAL_SLIDESHOW_IMAGES;
   } catch (err) {
     console.error('Firestore getSlideshowImages error:', err);
-    return [];
+    return INITIAL_SLIDESHOW_IMAGES;
   }
 };
 
 export const subscribeSlideshowImages = (callback: (images: SlideshowImage[]) => void) => {
   try {
-    return onSnapshot(collection(db, 'slideshowImages'), (snapshot) => {
+    return onSnapshot(collection(db, 'slideshowImages'), async (snapshot) => {
       if (!snapshot.empty) {
+        slideshowInitialized = true;
         const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as SlideshowImage));
         callback(list);
+      } else if (!slideshowInitialized) {
+        slideshowInitialized = true;
+        for (const img of INITIAL_SLIDESHOW_IMAGES) {
+          await setDoc(doc(db, 'slideshowImages', img.id), img);
+        }
+        callback(INITIAL_SLIDESHOW_IMAGES);
       } else {
-        callback([]);
+        callback(INITIAL_SLIDESHOW_IMAGES);
       }
     }, (err) => {
       console.error('Error in subscribeSlideshowImages snapshot:', err);
