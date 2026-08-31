@@ -8,11 +8,12 @@ export const metadata: Metadata = {
   keywords: 'SIH 2026, Smart India Hackathon, Sir C.R. Reddy College of Engineering, CRR, Eluru, Internal Hackathon, Innovation Cell',
   icons: {
     icon: [
-      { url: '/college-logo.png', type: 'image/png' },
-      { url: '/icon.png', type: 'image/png' },
+      { url: '/favicon.ico?v=2026', sizes: 'any' },
+      { url: '/favicon-32x32.png?v=2026', type: 'image/png' },
+      { url: '/college-logo.png?v=2026', type: 'image/png' },
     ],
-    shortcut: '/college-logo.png',
-    apple: '/college-logo.png',
+    shortcut: '/favicon.ico?v=2026',
+    apple: '/apple-touch-icon.png?v=2026',
   },
   alternates: {
     canonical: 'https://sih.crre.site/',
@@ -43,9 +44,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <head>
-        <link rel="icon" href="/college-logo.png" type="image/png" />
-        <link rel="shortcut icon" href="/college-logo.png" type="image/png" />
-        <link rel="apple-touch-icon" href="/college-logo.png" />
+        <link rel="icon" href="/favicon.ico?v=2026" sizes="any" />
+        <link rel="icon" href="/favicon-32x32.png?v=2026" type="image/png" />
+        <link rel="shortcut icon" href="/favicon.ico?v=2026" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2026" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
