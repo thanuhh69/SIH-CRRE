@@ -6,6 +6,14 @@ export const metadata: Metadata = {
   title: 'Internal SIH 2026 Portal | Sir C. R. Reddy College of Engineering',
   description: 'Internal Hackathon Portal for student team registration and screening at Sir C. R. Reddy College of Engineering (Autonomous), Eluru.',
   keywords: 'SIH 2026, Smart India Hackathon, Sir C.R. Reddy College of Engineering, CRR, Eluru, Internal Hackathon, Innovation Cell',
+  icons: {
+    icon: [
+      { url: '/college-logo.png', type: 'image/png' },
+      { url: '/icon.png', type: 'image/png' },
+    ],
+    shortcut: '/college-logo.png',
+    apple: '/college-logo.png',
+  },
   alternates: {
     canonical: 'https://sih.crre.site/',
   },
@@ -14,6 +22,14 @@ export const metadata: Metadata = {
     description: 'Internal Hackathon Portal for student team registration and screening at Sir C. R. Reddy College of Engineering (Autonomous), Eluru.',
     url: 'https://sih.crre.site/',
     siteName: 'SIH 2026 CRR Internal Portal',
+    images: [
+      {
+        url: '/college-logo.png',
+        width: 500,
+        height: 500,
+        alt: 'Sir C. R. Reddy College of Engineering Logo',
+      },
+    ],
     locale: 'en_US',
     type: 'website',
   },
@@ -27,6 +43,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <head>
+        <link rel="icon" href="/college-logo.png" type="image/png" />
+        <link rel="shortcut icon" href="/college-logo.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/college-logo.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
