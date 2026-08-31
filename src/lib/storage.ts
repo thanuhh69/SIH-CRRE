@@ -2,13 +2,60 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from './firebase';
 
 export const isCloudinaryActive = (): boolean => {
-  return true; // Cloudinary credentials are fully configured for 'dwzv8izif'
+  return true;
 };
 
 /**
- * Uploads a file to Cloudinary via server API route /api/upload
+ * Uploads a file to Cloudinary.
+ * First tries direct browser-to-Cloudinary signed upload (supporting files up to 100MB without serverless body limits).
+ * Fallbacks to server route /api/upload.
  */
 export const uploadToCloudinary = async (file: File, folder: string): Promise<string> => {
+  // Method 1: Direct Signed Upload to Cloudinary REST API (Bypasses Vercel 4.5MB request body limit)
+  try {
+    const signRes = await fetch('/api/upload/sign', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        folder,
+        fileName: file.name,
+        fileType: file.type,
+      }),
+    });
+
+    if (signRes.ok) {
+      const signData = await signRes.json();
+      if (signData.success && signData.signature) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('api_key', signData.api_key);
+        formData.append('timestamp', signData.timestamp.toString());
+        formData.append('signature', signData.signature);
+        formData.append('folder', signData.folder);
+        formData.append('public_id', signData.public_id);
+
+        const uploadEndpoint = `https://api.cloudinary.com/v1_1/${signData.cloud_name}/${signData.resource_type}/upload`;
+        const directRes = await fetch(uploadEndpoint, {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (directRes.ok) {
+          const directResult = await directRes.json();
+          if (directResult.secure_url) {
+            console.log('Direct Cloudinary signed upload successful:', directResult.secure_url);
+            return directResult.secure_url;
+          }
+        } else {
+          console.warn('Direct Cloudinary endpoint returned non-OK status, falling back to server route');
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('Direct Cloudinary signed upload attempt failed, trying /api/upload server route:', err);
+  }
+
+  // Method 2: Fallback to Server API route /api/upload
   const formData = new FormData();
   formData.append('file', file);
   formData.append('folder', folder);
@@ -37,6 +84,10 @@ export const uploadToCloudinary = async (file: File, folder: string): Promise<st
 export const getCloudinaryDownloadUrl = (url: string, customFileName?: string): string => {
   if (!url) return '#';
   
+  if (url.startsWith('local-file://')) {
+    return '#';
+  }
+
   // If it's a Cloudinary media URL, insert attachment flag if not present
   if (url.includes('cloudinary.com') && url.includes('/upload/')) {
     if (!url.includes('fl_attachment')) {
@@ -95,7 +146,7 @@ export const uploadFileWithFallback = async (
   file: File,
   folder: 'alumni' | 'videos' | 'registration-files' | 'resources' | 'slideshow-images'
 ): Promise<string> => {
-  // 1. Primary: Cloudinary Server API Route
+  // 1. Primary: Cloudinary (Direct Signed Upload or Server API Route)
   try {
     const cloudinaryUrl = await uploadToCloudinary(file, folder);
     console.log(`Successfully uploaded ${file.name} to Cloudinary:`, cloudinaryUrl);
@@ -129,10 +180,10 @@ export const uploadFileWithFallback = async (
     const reader = new FileReader();
     reader.onloadend = () => {
       const result = reader.result as string;
-      if (result && result.length > 800000) {
-        resolve(`local-file://${file.name}`);
-      } else {
+      if (result) {
         resolve(result);
+      } else {
+        resolve(`local-file://${file.name}`);
       }
     };
     reader.onerror = () => resolve(`local-file://${file.name}`);

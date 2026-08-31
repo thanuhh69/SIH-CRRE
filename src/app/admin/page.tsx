@@ -16,6 +16,7 @@ import {
   subscribeRegistrations,
   updateRegistrationStatus, 
   updateRegistrationAttendance,
+  updateRegistrationPPT,
   deleteRegistration, 
   getAlumni, 
   subscribeAlumni,
@@ -159,6 +160,25 @@ export default function AdminDashboardPage() {
   const [editingAnnouncement, setEditingAnnouncement] = useState<Partial<Announcement> | null>(null);
   const [editingEvent, setEditingEvent] = useState<Partial<EventDate> | null>(null);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [isAdminUploadingPPT, setIsAdminUploadingPPT] = useState(false);
+
+  const handleAdminPPTUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !selectedReg) return;
+    setIsAdminUploadingPPT(true);
+    try {
+      const url = await uploadFileWithFallback(file, 'registration-files');
+      await updateRegistrationPPT(selectedReg.id, url, file.name);
+      setSelectedReg(prev => prev ? { ...prev, pptUrl: url, pptFileName: file.name } : null);
+      loadAllAdminData();
+      alert(`PPT presentation for Team ${selectedReg.teamName} uploaded successfully to Cloudinary!`);
+    } catch (err) {
+      console.error('Error uploading PPT in admin:', err);
+      alert('Failed to upload presentation file.');
+    } finally {
+      setIsAdminUploadingPPT(false);
+    }
+  };
 
   // Listen to Firebase Auth state
   useEffect(() => {
@@ -1975,23 +1995,58 @@ export default function AdminDashboardPage() {
                 <p className="p-2 bg-slate-50 rounded border border-slate-200 mt-1">{selectedReg.problemStatementTitle}</p>
               </div>
 
-              {selectedReg.pptFileName && (
-                <div className="p-3 bg-amber-50 border border-amber-200 rounded flex justify-between items-center">
+              {selectedReg.pptFileName ? (
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                   <div>
                     <span className="font-bold text-amber-900 block">Uploaded Presentation:</span>
                     <span className="font-mono text-xs text-amber-800">{selectedReg.pptFileName}</span>
+                    {selectedReg.pptUrl?.startsWith('local-file://') && (
+                      <span className="text-[11px] font-bold text-red-600 block mt-0.5">
+                        ⚠️ File was saved in local fallback mode. Please re-upload to Cloudinary below.
+                      </span>
+                    )}
                   </div>
-                  {selectedReg.pptUrl && (
-                    <a
-                      href={getCloudinaryDownloadUrl(selectedReg.pptUrl, selectedReg.pptFileName)}
-                      download={selectedReg.pptFileName}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="bg-college-navy text-white px-3 py-1.5 rounded font-bold text-[11px] flex items-center gap-1 hover:bg-college-blue transition-colors"
-                    >
-                      <Download className="w-3.5 h-3.5" /> Download PPT
-                    </a>
-                  )}
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    {selectedReg.pptUrl && !selectedReg.pptUrl.startsWith('local-file://') && (
+                      <a
+                        href={getCloudinaryDownloadUrl(selectedReg.pptUrl, selectedReg.pptFileName)}
+                        download={selectedReg.pptFileName}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-college-navy text-white px-3 py-1.5 rounded font-bold text-[11px] flex items-center gap-1 hover:bg-college-blue transition-colors shrink-0"
+                      >
+                        <Download className="w-3.5 h-3.5" /> Download PPT
+                      </a>
+                    )}
+
+                    <label className="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded font-bold text-[11px] flex items-center gap-1 cursor-pointer transition-colors shrink-0">
+                      <Upload className="w-3.5 h-3.5 text-white" />
+                      <span>{isAdminUploadingPPT ? 'Uploading...' : 'Re-upload PPT'}</span>
+                      <input
+                        type="file"
+                        accept=".ppt,.pptx"
+                        onChange={handleAdminPPTUpload}
+                        disabled={isAdminUploadingPPT}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded flex justify-between items-center">
+                  <span className="text-slate-500 font-italic">No PPT presentation uploaded yet for this team.</span>
+                  <label className="bg-college-navy hover:bg-college-blue text-white px-3 py-1.5 rounded font-bold text-[11px] flex items-center gap-1 cursor-pointer transition-colors">
+                    <Upload className="w-3.5 h-3.5 text-college-gold" />
+                    <span>{isAdminUploadingPPT ? 'Uploading...' : 'Upload PPT'}</span>
+                    <input
+                      type="file"
+                      accept=".ppt,.pptx"
+                      onChange={handleAdminPPTUpload}
+                      disabled={isAdminUploadingPPT}
+                      className="hidden"
+                    />
+                  </label>
                 </div>
               )}
 
