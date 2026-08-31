@@ -951,7 +951,7 @@ export default function AdminDashboardPage() {
                           </td>
                           <td className="p-3 text-right space-x-1 whitespace-nowrap">
                             {(reg.pptFileName || reg.pptUrl) ? (
-                              reg.pptUrl && !reg.pptUrl.startsWith('local-file://') ? (
+                              reg.pptUrl && (reg.pptUrl.startsWith('http://') || reg.pptUrl.startsWith('https://')) ? (
                                 <a
                                   href={getCloudinaryDownloadUrl(reg.pptUrl, reg.pptFileName)}
                                   download={reg.pptFileName || `${reg.teamName}_PPT`}
@@ -2010,15 +2010,15 @@ export default function AdminDashboardPage() {
                   <div>
                     <span className="font-bold text-amber-900 block">Uploaded Presentation:</span>
                     <span className="font-mono text-xs text-amber-800">{selectedReg.pptFileName}</span>
-                    {selectedReg.pptUrl?.startsWith('local-file://') && (
+                    {(!selectedReg.pptUrl || (!selectedReg.pptUrl.startsWith('http://') && !selectedReg.pptUrl.startsWith('https://'))) && (
                       <span className="text-[11px] font-bold text-red-600 block mt-0.5">
-                        ⚠️ File was saved in local fallback mode. Please re-upload to Cloudinary below.
+                        ⚠️ Presentation is in local fallback mode. Click "Re-upload PPT" to save to Cloudinary.
                       </span>
                     )}
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">
-                    {selectedReg.pptUrl && !selectedReg.pptUrl.startsWith('local-file://') && (
+                    {selectedReg.pptUrl && (selectedReg.pptUrl.startsWith('http://') || selectedReg.pptUrl.startsWith('https://')) && (
                       <a
                         href={getCloudinaryDownloadUrl(selectedReg.pptUrl, selectedReg.pptFileName)}
                         download={selectedReg.pptFileName}

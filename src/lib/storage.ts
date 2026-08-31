@@ -80,23 +80,25 @@ export const uploadToCloudinary = async (file: File, folder: string): Promise<st
 
 /**
  * Formats a Cloudinary file URL to trigger forced browser download for PPT / PDF / images
+ * Strictly verifies http:// or https:// scheme to prevent local-file:// browser tabs.
  */
-export const getCloudinaryDownloadUrl = (url: string, customFileName?: string): string => {
-  if (!url) return '#';
+export const getCloudinaryDownloadUrl = (url?: string | null, customFileName?: string): string => {
+  if (!url || typeof url !== 'string') return '#';
   
-  if (url.startsWith('local-file://')) {
+  const trimmed = url.trim();
+  if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
     return '#';
   }
 
   // If it's a Cloudinary media URL, insert attachment flag if not present
-  if (url.includes('cloudinary.com') && url.includes('/upload/')) {
-    if (!url.includes('fl_attachment')) {
-      const parts = url.split('/upload/');
+  if (trimmed.includes('cloudinary.com') && trimmed.includes('/upload/')) {
+    if (!trimmed.includes('fl_attachment')) {
+      const parts = trimmed.split('/upload/');
       return `${parts[0]}/upload/fl_attachment/${parts[1]}`;
     }
   }
   
-  return url;
+  return trimmed;
 };
 
 export const compressImageFile = (file: File, maxWidth = 1200, quality = 0.75): Promise<string> => {
@@ -149,8 +151,10 @@ export const uploadFileWithFallback = async (
   // 1. Primary: Cloudinary (Direct Signed Upload or Server API Route)
   try {
     const cloudinaryUrl = await uploadToCloudinary(file, folder);
-    console.log(`Successfully uploaded ${file.name} to Cloudinary:`, cloudinaryUrl);
-    return cloudinaryUrl;
+    if (cloudinaryUrl && (cloudinaryUrl.startsWith('http://') || cloudinaryUrl.startsWith('https://'))) {
+      console.log(`Successfully uploaded ${file.name} to Cloudinary:`, cloudinaryUrl);
+      return cloudinaryUrl;
+    }
   } catch (err) {
     console.warn(`Cloudinary API upload failed for ${file.name}, trying Firebase Storage fallback:`, err);
   }
@@ -165,7 +169,9 @@ export const uploadFileWithFallback = async (
       const storageRef = ref(storage, `${folder}/${Date.now()}_${file.name}`);
       const snapshot = await uploadBytes(storageRef, file);
       const downloadUrl = await getDownloadURL(snapshot.ref);
-      return downloadUrl;
+      if (downloadUrl && (downloadUrl.startsWith('http://') || downloadUrl.startsWith('https://'))) {
+        return downloadUrl;
+      }
     } catch (err) {
       console.warn(`Firebase Storage upload to ${folder} failed, using local fallback:`, err);
     }
@@ -180,7 +186,7 @@ export const uploadFileWithFallback = async (
     const reader = new FileReader();
     reader.onloadend = () => {
       const result = reader.result as string;
-      if (result) {
+      if (result && result.startsWith('data:')) {
         resolve(result);
       } else {
         resolve(`local-file://${file.name}`);
