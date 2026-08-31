@@ -950,18 +950,28 @@ export default function AdminDashboardPage() {
                             </button>
                           </td>
                           <td className="p-3 text-right space-x-1 whitespace-nowrap">
-                            {reg.pptUrl && (
-                              <a
-                                href={getCloudinaryDownloadUrl(reg.pptUrl, reg.pptFileName)}
-                                download={reg.pptFileName || `${reg.teamName}_PPT`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="bg-amber-600 hover:bg-amber-700 text-white px-2 py-1 rounded text-[11px] font-bold inline-flex items-center gap-1 transition-colors"
-                                title="Download Team Presentation PPT from Cloudinary"
-                              >
-                                <FileText className="w-3.5 h-3.5" /> PPT
-                              </a>
-                            )}
+                            {(reg.pptFileName || reg.pptUrl) ? (
+                              reg.pptUrl && !reg.pptUrl.startsWith('local-file://') ? (
+                                <a
+                                  href={getCloudinaryDownloadUrl(reg.pptUrl, reg.pptFileName)}
+                                  download={reg.pptFileName || `${reg.teamName}_PPT`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="bg-amber-600 hover:bg-amber-700 text-white px-2 py-1 rounded text-[11px] font-bold inline-flex items-center gap-1 transition-colors"
+                                  title="Download Team Presentation PPT from Cloudinary"
+                                >
+                                  <FileText className="w-3.5 h-3.5" /> PPT
+                                </a>
+                              ) : (
+                                <button
+                                  onClick={() => setSelectedReg(reg)}
+                                  className="bg-amber-700 hover:bg-amber-800 text-white px-2 py-1 rounded text-[11px] font-bold inline-flex items-center gap-1 transition-colors"
+                                  title="PPT needs Cloudinary upload. Click to open team modal & upload."
+                                >
+                                  <FileText className="w-3.5 h-3.5" /> Upload PPT
+                                </button>
+                              )
+                            ) : null}
                             <button
                               onClick={() => setSelectedReg(reg)}
                               className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 rounded text-[11px] font-bold"

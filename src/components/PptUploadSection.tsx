@@ -25,7 +25,7 @@ export default function PptUploadSection({
   const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const validateAndSetFile = (file: File) => {
+  const validateAndSetFile = async (file: File) => {
     setFileError(null);
     setUploadSuccess(false);
 
@@ -40,10 +40,25 @@ export default function PptUploadSection({
     }
 
     setSelectedFile(file);
-    if (onFileSelected) {
-      // Create temporary blob preview URL
-      const tempUrl = URL.createObjectURL(file);
-      onFileSelected(file, tempUrl);
+    setIsUploading(true);
+
+    try {
+      const url = await uploadFileWithFallback(file, 'registration-files');
+      setIsUploading(false);
+      setUploadSuccess(true);
+      setUploadedFileName(file.name);
+      setUploadedFileUrl(url);
+
+      if (onFileSelected) {
+        onFileSelected(file, url);
+      }
+      if (onUploadSuccess) {
+        onUploadSuccess(url, file.name);
+      }
+    } catch (err) {
+      console.error('PPT Upload Error:', err);
+      setIsUploading(false);
+      setFileError('Failed to upload presentation to Cloudinary. Please try again.');
     }
   };
 

@@ -136,10 +136,12 @@ export default function RegistrationForm() {
     setLoading(true);
 
     try {
-      let uploadedUrl = pptFileUrl || '';
+      let uploadedUrl = '';
       let uploadedFileName = pptFile ? pptFile.name : undefined;
 
-      if (pptFile) {
+      if (pptFileUrl && !pptFileUrl.startsWith('blob:') && !pptFileUrl.startsWith('local-file:')) {
+        uploadedUrl = pptFileUrl;
+      } else if (pptFile) {
         const { uploadFileWithFallback } = await import('@/lib/storage');
         uploadedUrl = await uploadFileWithFallback(pptFile, 'registration-files');
       }
