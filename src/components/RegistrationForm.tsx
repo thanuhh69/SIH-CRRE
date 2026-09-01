@@ -13,7 +13,8 @@ import {
   ShieldCheck,
   AlertCircle,
   Download,
-  FileText
+  FileText,
+  Sparkles
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
