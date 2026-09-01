@@ -721,7 +721,6 @@ export const subscribeSlideshowImages = (callback: (images: SlideshowImage[]) =>
 
 export const saveSlideshowImage = async (image: SlideshowImage): Promise<void> => {
   try {
-    slideshowInitialized = true;
     await setDoc(doc(db, 'slideshowImages', image.id), image);
   } catch (err) {
     console.error('Firestore saveSlideshowImage error:', err);
@@ -730,7 +729,6 @@ export const saveSlideshowImage = async (image: SlideshowImage): Promise<void> =
 
 export const deleteSlideshowImage = async (id: string): Promise<void> => {
   try {
-    slideshowInitialized = true;
     await deleteDoc(doc(db, 'slideshowImages', id));
   } catch (err) {
     console.error('Firestore deleteSlideshowImage error:', err);
