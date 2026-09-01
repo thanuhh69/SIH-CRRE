@@ -907,6 +907,7 @@ export default function AdminDashboardPage() {
                       <th className="p-3">Leader</th>
                       <th className="p-3">Department</th>
                       <th className="p-3">PS ID</th>
+                      <th className="p-3">PS Title</th>
                       <th className="p-3">Status</th>
                       <th className="p-3 text-center">Attendance</th>
                       <th className="p-3 text-right">Actions</th>
@@ -915,7 +916,7 @@ export default function AdminDashboardPage() {
                   <tbody className="divide-y divide-slate-200">
                     {filteredRegistrations.length === 0 ? (
                       <tr>
-                        <td colSpan={8} className="p-8 text-center text-slate-500">
+                        <td colSpan={9} className="p-8 text-center text-slate-500">
                           No team registrations found matching your query.
                         </td>
                       </tr>
@@ -926,7 +927,8 @@ export default function AdminDashboardPage() {
                           <td className="p-3 font-bold text-college-navy">{reg.teamName}</td>
                           <td className="p-3">{reg.leaderName}</td>
                           <td className="p-3 text-slate-600">{reg.department}</td>
-                          <td className="p-3 font-mono text-slate-600">{reg.problemStatementId}</td>
+                          <td className="p-3 font-mono font-bold text-college-gold">{reg.problemStatementId || '—'}</td>
+                          <td className="p-3 text-slate-700 max-w-[200px] truncate" title={reg.problemStatementTitle}>{reg.problemStatementTitle || '—'}</td>
                           <td className="p-3">
                             <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                               reg.status === 'approved' ? 'bg-emerald-100 text-emerald-800' :

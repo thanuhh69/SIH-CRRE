@@ -41,8 +41,12 @@ export default function CollegeSlideshow() {
   useEffect(() => {
     getSlideshowImages().then(list => {
       const valid = (list || []).filter(item => item && item.url && item.url.trim().length > 0);
-      if (valid.length > 0) setImages(valid);
-      else setImages(DEFAULT_SLIDES);
+      if (valid.length > 0) {
+        valid.sort((a, b) => (a.order || 0) - (b.order || 0) || new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+        setImages(valid);
+      } else {
+        setImages(DEFAULT_SLIDES);
+      }
     }).catch(err => {
       console.warn('Firestore slideshow fetch error, using defaults:', err);
       setImages(DEFAULT_SLIDES);
@@ -50,8 +54,12 @@ export default function CollegeSlideshow() {
 
     const unsubscribe = subscribeSlideshowImages((list) => {
       const valid = (list || []).filter(item => item && item.url && item.url.trim().length > 0);
-      if (valid.length > 0) setImages(valid);
-      else setImages(DEFAULT_SLIDES);
+      if (valid.length > 0) {
+        valid.sort((a, b) => (a.order || 0) - (b.order || 0) || new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+        setImages(valid);
+      } else {
+        setImages(DEFAULT_SLIDES);
+      }
     });
     return () => unsubscribe();
   }, []);

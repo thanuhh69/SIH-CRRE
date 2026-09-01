@@ -50,6 +50,8 @@ export default function RegistrationForm() {
 
   // Form State
   const [teamName, setTeamName] = useState('');
+  const [problemStatementId, setProblemStatementId] = useState('');
+  const [problemStatementTitle, setProblemStatementTitle] = useState('');
   const [leaderName, setLeaderName] = useState('');
   const [leaderEmail, setLeaderEmail] = useState('');
   const [leaderPhone, setLeaderPhone] = useState('');
@@ -97,8 +99,8 @@ export default function RegistrationForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!teamName || !leaderName || !leaderEmail || !leaderPhone || !leaderRollNumber) {
-      alert('Please fill in all mandatory Team Leader fields (Name, Email, Mobile Number, Roll Number).');
+    if (!teamName || !problemStatementId || !problemStatementTitle || !leaderName || !leaderEmail || !leaderPhone || !leaderRollNumber) {
+      alert('Please fill in all mandatory fields: Team Name, SIH Problem Statement ID, Problem Statement Title, and Team Leader details.');
       return;
     }
 
@@ -128,6 +130,8 @@ export default function RegistrationForm() {
     try {
       const result = await createRegistration({
         teamName,
+        problemStatementId,
+        problemStatementTitle,
         leaderName,
         leaderEmail,
         leaderPhone,
@@ -292,18 +296,48 @@ export default function RegistrationForm() {
             </h3>
           </div>
 
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">
-              Team Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              required
-              placeholder="e.g. Cyber Crusaders"
-              value={teamName}
-              onChange={e => setTeamName(e.target.value)}
-              className="w-full px-3 py-2 text-xs border border-slate-300 rounded bg-white outline-none focus:ring-1 focus:ring-college-navy"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                Team Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                placeholder="e.g. Cyber Crusaders"
+                value={teamName}
+                onChange={e => setTeamName(e.target.value)}
+                className="w-full px-3 py-2 text-xs border border-slate-300 rounded bg-white outline-none focus:ring-1 focus:ring-college-navy"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                SIH Problem Statement ID <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                placeholder="e.g. SIH1234"
+                value={problemStatementId}
+                onChange={e => setProblemStatementId(e.target.value)}
+                className="w-full px-3 py-2 text-xs border border-slate-300 rounded bg-white outline-none focus:ring-1 focus:ring-college-navy font-mono"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                Problem Statement Title <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                placeholder="Enter the complete problem statement title"
+                value={problemStatementTitle}
+                onChange={e => setProblemStatementTitle(e.target.value)}
+                className="w-full px-3 py-2 text-xs border border-slate-300 rounded bg-white outline-none focus:ring-1 focus:ring-college-navy"
+              />
+            </div>
           </div>
         </div>
 

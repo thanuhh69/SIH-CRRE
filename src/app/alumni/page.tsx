@@ -94,17 +94,17 @@ export default function AlumniPage() {
               >
                 <div>
                   <div className="flex items-start gap-4 mb-4">
-                    {item.photoUrl ? (
-                      <img
-                        src={item.photoUrl}
-                        alt={item.name}
-                        className="w-20 h-20 rounded-full object-cover p-0.5 border-2 border-college-gold shrink-0 shadow-sm bg-slate-100"
-                      />
-                    ) : (
-                      <div className="w-20 h-20 rounded-full bg-slate-200 border-2 border-college-gold flex items-center justify-center text-slate-500 shrink-0">
-                        <User className="w-8 h-8" />
-                      </div>
-                    )}
+                    <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-college-gold shrink-0 shadow-sm bg-slate-100 flex items-center justify-center">
+                      {item.photoUrl ? (
+                        <img
+                          src={item.photoUrl}
+                          alt={item.name}
+                          className="w-full h-full object-cover object-center"
+                        />
+                      ) : (
+                        <User className="w-8 h-8 text-slate-500" />
+                      )}
+                    </div>
                     <div>
                       <span className="text-[10px] font-mono font-bold bg-college-dark text-college-gold px-2 py-0.5 rounded border border-college-gold/30">
                         SIH {item.sihYear}
