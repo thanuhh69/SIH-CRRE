@@ -27,6 +27,9 @@ interface GuidelineItem {
   content: string[];
 }
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default function GuidelinesPage() {
   const [openSections, setOpenSections] = useState<string[]>(['eligibility', 'team-formation']);
   const [samplePPT, setSamplePPT] = useState<SamplePPTResource | null>(null);
