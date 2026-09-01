@@ -94,12 +94,12 @@ export default function AlumniPage() {
               >
                 <div>
                   <div className="flex items-start gap-4 mb-4">
-                    <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-college-gold shrink-0 shadow-sm bg-slate-100 flex items-center justify-center">
+                    <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-2 border-college-gold shrink-0 shadow-sm bg-slate-100 flex items-center justify-center">
                       {item.photoUrl ? (
                         <img
                           src={item.photoUrl}
                           alt={item.name}
-                          className="w-full h-full object-cover object-center"
+                          className="w-full h-full object-cover object-top"
                         />
                       ) : (
                         <User className="w-8 h-8 text-slate-500" />

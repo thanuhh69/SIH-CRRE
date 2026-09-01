@@ -694,29 +694,63 @@ export const getSlideshowImages = async (): Promise<SlideshowImage[]> => {
     if (!snapshot.empty) {
       return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as SlideshowImage));
     }
-    return [];
   } catch (err) {
-    console.error('Firestore getSlideshowImages error:', err);
-    return [];
+    console.warn('Firestore getSlideshowImages fallback to API route:', err);
   }
+
+  try {
+    const res = await fetch('/api/slideshow');
+    const json = await res.json();
+    if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+      return json.data;
+    }
+  } catch (err) {
+    console.error('Error fetching /api/slideshow:', err);
+  }
+
+  return [];
 };
 
 export const subscribeSlideshowImages = (callback: (images: SlideshowImage[]) => void) => {
+  let unsubFirestore: (() => void) | null = null;
+  let intervalId: NodeJS.Timeout | null = null;
+
+  const fetchFromApi = async () => {
+    try {
+      const res = await fetch('/api/slideshow');
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data)) {
+        callback(json.data);
+      }
+    } catch (err) {
+      console.error('Error in fetchFromApi /api/slideshow:', err);
+    }
+  };
+
   try {
-    return onSnapshot(collection(db, 'slideshowImages'), (snapshot) => {
+    unsubFirestore = onSnapshot(collection(db, 'slideshowImages'), (snapshot) => {
       if (!snapshot.empty) {
         const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as SlideshowImage));
         callback(list);
       } else {
-        callback([]);
+        fetchFromApi();
       }
     }, (err) => {
-      console.error('Error in subscribeSlideshowImages snapshot:', err);
+      console.warn('Firestore subscribeSlideshowImages permission error, switching to API poll:', err);
+      fetchFromApi();
+      if (!intervalId) {
+        intervalId = setInterval(fetchFromApi, 3000);
+      }
     });
   } catch (err) {
-    console.error('Error establishing subscribeSlideshowImages listener:', err);
-    return () => {};
+    fetchFromApi();
+    intervalId = setInterval(fetchFromApi, 3000);
   }
+
+  return () => {
+    if (unsubFirestore) unsubFirestore();
+    if (intervalId) clearInterval(intervalId);
+  };
 };
 
 export const saveSlideshowImage = async (image: SlideshowImage): Promise<void> => {
@@ -725,6 +759,16 @@ export const saveSlideshowImage = async (image: SlideshowImage): Promise<void> =
   } catch (err) {
     console.error('Firestore saveSlideshowImage error:', err);
   }
+
+  try {
+    await fetch('/api/slideshow', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(image)
+    });
+  } catch (err) {
+    console.error('API saveSlideshowImage error:', err);
+  }
 };
 
 export const deleteSlideshowImage = async (id: string): Promise<void> => {
@@ -732,5 +776,11 @@ export const deleteSlideshowImage = async (id: string): Promise<void> => {
     await deleteDoc(doc(db, 'slideshowImages', id));
   } catch (err) {
     console.error('Firestore deleteSlideshowImage error:', err);
+  }
+
+  try {
+    await fetch(`/api/slideshow?id=${id}`, { method: 'DELETE' });
+  } catch (err) {
+    console.error('API deleteSlideshowImage error:', err);
   }
 };
