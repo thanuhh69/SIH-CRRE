@@ -24,8 +24,18 @@ import {
   FileText,
   ExternalLink
 } from 'lucide-react';
-import PptUploadSection from '@/components/PptUploadSection';
 import confetti from 'canvas-confetti';
+
+const DEFAULT_SAMPLE_PPT: SamplePPTResource = {
+  fileName: 'SIH2026-IDEA-Presentation-Format.pptx',
+  downloadURL: 'https://res.cloudinary.com/dwzv8izif/raw/upload/v1788187864/sih-crre/registration-files/SMART_INDIA_HACKATHON_2026_TEMPLATE.pptx',
+  storagePath: 'sih-crre/registration-files/SMART_INDIA_HACKATHON_2026_TEMPLATE.pptx',
+  fileSize: 262144,
+  uploadedAt: new Date().toISOString(),
+  uploadedBy: 'Admin Committee',
+  version: '1.0',
+  published: true
+};
 
 const DEPARTMENTS = [
   'Computer Science & Engineering',
@@ -45,7 +55,7 @@ export default function RegistrationForm() {
   const [problemStatements, setProblemStatements] = useState<ProblemStatement[]>([]);
   const [loading, setLoading] = useState(false);
   const [submittedRegistration, setSubmittedRegistration] = useState<TeamRegistration | null>(null);
-  const [samplePPT, setSamplePPT] = useState<SamplePPTResource | null>(null);
+  const [samplePPT, setSamplePPT] = useState<SamplePPTResource | null>(DEFAULT_SAMPLE_PPT);
 
   // Form State
   const [teamName, setTeamName] = useState('');
@@ -59,11 +69,6 @@ export default function RegistrationForm() {
   const [psTitle, setPsTitle] = useState('');
   const [facultyMentor, setFacultyMentor] = useState('');
 
-  // PPT Upload State
-  const [pptFile, setPptFile] = useState<File | null>(null);
-  const [pptFileUrl, setPptFileUrl] = useState<string | null>(null);
-  const [pptError, setPptError] = useState<string | null>(null);
-
   // Team Members State (Minimum leader + optional 5 extra members)
   const [members, setMembers] = useState<TeamMember[]>([]);
 
@@ -74,7 +79,11 @@ export default function RegistrationForm() {
     });
 
     const unsubscribe = subscribeSamplePPT((ppt) => {
-      setSamplePPT(ppt);
+      if (ppt && ppt.published) {
+        setSamplePPT(ppt);
+      } else {
+        setSamplePPT(DEFAULT_SAMPLE_PPT);
+      }
     });
     return () => unsubscribe();
   }, []);
@@ -91,7 +100,9 @@ export default function RegistrationForm() {
   };
 
   const handleRemoveMember = (index: number) => {
-    setMembers(members.filter((_, idx) => idx !== index));
+    const updated = [...members];
+    updated.splice(index, 1);
+    setMembers(updated);
   };
 
   const handleMemberChange = (index: number, field: keyof TeamMember, value: string) => {
@@ -102,7 +113,6 @@ export default function RegistrationForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setPptError(null);
 
     if (!teamName || !leaderName || !leaderEmail || !leaderPhone || !leaderRollNumber) {
       alert('Please fill in all mandatory Team Leader fields (Name, Email, Mobile Number, Roll Number).');
@@ -136,16 +146,6 @@ export default function RegistrationForm() {
     setLoading(true);
 
     try {
-      let uploadedUrl = '';
-      let uploadedFileName = pptFile ? pptFile.name : undefined;
-
-      if (pptFileUrl && !pptFileUrl.startsWith('blob:') && !pptFileUrl.startsWith('local-file:')) {
-        uploadedUrl = pptFileUrl;
-      } else if (pptFile) {
-        const { uploadFileWithFallback } = await import('@/lib/storage');
-        uploadedUrl = await uploadFileWithFallback(pptFile, 'registration-files');
-      }
-
       const result = await createRegistration({
         teamName,
         leaderName,
@@ -157,8 +157,6 @@ export default function RegistrationForm() {
         problemStatementTitle: titleToUse,
         facultyMentor,
         members: fullMembersList,
-        pptUrl: uploadedUrl,
-        pptFileName: uploadedFileName,
       });
 
       setSubmittedRegistration(result);
@@ -168,41 +166,41 @@ export default function RegistrationForm() {
         // Safe fallback if confetti isn't supported
       }
     } catch (err) {
-      console.error('Submission failed:', err);
-      alert('Registration failed. Please try again.');
+      console.error('Registration error:', err);
+      alert('Registration failed. Please check network connection and try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  // Success Confirmation Screen
   if (submittedRegistration) {
     return (
-      <div className="max-w-3xl mx-auto my-12 bg-white rounded-lg border-2 border-college-gold p-6 md:p-10 shadow-xl text-center space-y-6">
-        <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto border-4 border-emerald-200">
-          <CheckCircle2 className="w-12 h-12" />
+      <div className="bg-white rounded-lg border border-slate-300 shadow-college-lg p-6 md:p-10 space-y-6 text-center animate-fade-in">
+        <div className="w-16 h-16 bg-emerald-100 border-2 border-emerald-500 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-md">
+          <CheckCircle2 className="w-10 h-10" />
         </div>
 
-        <div>
-          <span className="text-xs font-mono font-bold bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full uppercase tracking-wider">
-            OFFICIAL RECEIPT CONFIRMED
+        <div className="space-y-2">
+          <span className="text-xs font-mono font-bold text-emerald-700 uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded border border-emerald-200">
+            Registration Successful
           </span>
-          <h2 className="font-serif font-bold text-2xl md:text-3xl text-college-navy mt-3">
-            Registration Successful!
+          <h2 className="font-serif font-extrabold text-2xl md:text-3xl text-college-navy">
+            Team Registration Confirmed!
           </h2>
-          <p className="text-slate-600 text-sm mt-1">
-            Sir C.R. Reddy College of Engineering – SIH Internal Hackathon 2026
+          <p className="text-slate-600 text-xs md:text-sm max-w-xl mx-auto">
+            Your team registration has been recorded into the Sir C.R. Reddy CoE Internal Hackathon 2026 database.
           </p>
         </div>
 
-        {/* Unique Registration Badge */}
-        <div className="bg-college-dark text-white p-6 rounded-lg border-2 border-college-gold text-left space-y-3 relative overflow-hidden">
+        {/* Confirmation Details Card */}
+        <div className="bg-gradient-to-b from-college-dark via-slate-900 to-college-dark text-white p-6 rounded-lg border-2 border-college-gold/60 max-w-xl mx-auto shadow-xl text-left space-y-4">
           <div className="flex justify-between items-center border-b border-white/10 pb-3">
             <span className="text-xs font-mono text-college-gold font-bold">REGISTRATION ID</span>
             <span className="font-mono text-xl font-extrabold text-college-goldLight tracking-wider">
               {submittedRegistration.id}
             </span>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
             <div>
               <span className="text-slate-400">Team Name:</span>
@@ -211,46 +209,33 @@ export default function RegistrationForm() {
             <div>
               <span className="text-slate-400">Team Leader:</span>
               <p className="font-bold text-white text-sm">{submittedRegistration.leaderName}</p>
-              <p className="text-[11px] font-mono text-college-gold">📞 {submittedRegistration.leaderPhone}</p>
-            </div>
-            <div>
-              <span className="text-slate-400">Department:</span>
-              <p className="text-slate-200">{submittedRegistration.department} ({submittedRegistration.year})</p>
-            </div>
-            <div>
-              <span className="text-slate-400">Problem Statement ID:</span>
-              <p className="text-college-gold font-mono font-semibold">{submittedRegistration.problemStatementId}</p>
             </div>
             <div>
               <span className="text-slate-400">Total Team Members:</span>
               <p className="text-white font-semibold">{submittedRegistration.members?.length || 1} Members</p>
             </div>
-            {submittedRegistration.pptFileName && (
-              <div className="md:col-span-2 pt-2 border-t border-white/10 flex items-center justify-between">
-                <span className="text-slate-400">Uploaded Problem Statement PPT:</span>
-                <span className="text-college-gold font-mono font-bold text-xs truncate">
-                  📄 {submittedRegistration.pptFileName}
-                </span>
-              </div>
-            )}
           </div>
         </div>
 
-        <div className="p-4 bg-amber-50 border border-amber-200 rounded text-xs text-amber-900 flex items-start gap-2 text-left">
+        <div className="p-4 bg-amber-50 border border-amber-200 rounded text-xs text-amber-900 flex items-start gap-2 text-left max-w-xl mx-auto">
           <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-          <div>
-            <span className="font-bold">Important Notice:</span> Please save your Registration ID (
-            <strong className="font-mono">{submittedRegistration.id}</strong>) for all future correspondence, project abstract submission, and campus evaluation rounds.
+          <div className="space-y-1">
+            <p className="font-bold">Next Steps for Hackathon Screening:</p>
+            <ul className="list-disc list-inside text-[11px] space-y-0.5 text-amber-800">
+              <li>Save your Registration ID: <strong>{submittedRegistration.id}</strong></li>
+              <li>Prepare your 8-slide pitch presentation using the official college SIH template.</li>
+              <li>Report to campus evaluation venue on 15th September 2026.</li>
+            </ul>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4 print:hidden">
+        <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
           <button
             onClick={() => window.print()}
-            className="inline-flex items-center justify-center gap-2 bg-college-navy text-white px-6 py-2.5 rounded font-bold text-xs hover:bg-college-blue transition-colors border border-college-gold/30"
+            className="inline-flex items-center justify-center gap-2 bg-college-navy text-white px-6 py-2.5 rounded font-bold text-xs hover:bg-college-blue transition-colors shadow-md border border-college-gold/30"
           >
             <Printer className="w-4 h-4 text-college-gold" />
-            <span>PRINT / SAVE REGISTRATION PASS</span>
+            <span>PRINT CONFIRMATION SLIP</span>
           </button>
 
           <button
@@ -271,6 +256,8 @@ export default function RegistrationForm() {
       </div>
     );
   }
+
+  const activePPT = samplePPT || DEFAULT_SAMPLE_PPT;
 
   return (
     <div className="bg-white rounded-lg border border-slate-300 shadow-college-lg overflow-hidden">
@@ -299,114 +286,148 @@ export default function RegistrationForm() {
               <p className="text-xs text-slate-200">
                 Download the official SIH Internal Hackathon presentation template before preparing your team presentation.
               </p>
-              {samplePPT && samplePPT.published ? (
-                <div className="flex items-center gap-3 text-[11px] font-mono text-slate-300 pt-1">
-                  <span><strong>Latest Version:</strong> {samplePPT.version}</span>
-                  <span>•</span>
-                  <span className="truncate max-w-[200px]"><strong>File:</strong> {samplePPT.fileName}</span>
-                  {samplePPT.uploadedAt && (
-                    <>
-                      <span>•</span>
-                      <span><strong>Updated:</strong> {new Date(samplePPT.uploadedAt).toLocaleDateString()}</span>
-                    </>
-                  )}
-                </div>
-              ) : null}
+              <div className="flex items-center gap-3 text-[11px] font-mono text-slate-300 pt-1">
+                <span><strong>Version:</strong> {activePPT.version || '1.0'}</span>
+                <span>•</span>
+                <span className="truncate max-w-[220px]"><strong>File:</strong> {activePPT.fileName}</span>
+              </div>
             </div>
 
-            {samplePPT && samplePPT.published ? (
-              <a
-                href={getCloudinaryDownloadUrl(samplePPT.downloadURL, samplePPT.fileName)}
-                download={samplePPT.fileName}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="shrink-0 inline-flex items-center gap-2 bg-college-gold hover:bg-college-goldLight text-college-dark px-4 py-2.5 rounded font-bold text-xs shadow-md transition-all border border-amber-300 hover:scale-105"
-              >
-                <Download className="w-4 h-4" />
-                <span>📥 DOWNLOAD SAMPLE PPT</span>
-              </a>
-            ) : (
-              <div className="shrink-0 bg-slate-800 text-slate-400 px-4 py-2.5 rounded text-xs font-mono border border-slate-700">
-                Sample PPT Currently Unavailable
-              </div>
-            )}
+            <a
+              href={getCloudinaryDownloadUrl(activePPT.downloadURL, activePPT.fileName)}
+              download={activePPT.fileName}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 inline-flex items-center gap-2 bg-college-gold hover:bg-college-goldLight text-college-dark px-4 py-2.5 rounded font-bold text-xs shadow-md transition-all border border-amber-300 hover:scale-105"
+            >
+              <Download className="w-4 h-4" />
+              <span>📥 DOWNLOAD SAMPLE PPT</span>
+            </a>
           </div>
         </div>
-        
-        {/* Section 1: Team & Leader Basic Info */}
+
+        {/* Section 1: Team & Problem Statement Info */}
         <div className="space-y-4">
-          <h3 className="font-serif font-bold text-base text-college-navy border-b border-slate-200 pb-2 flex items-center gap-2">
-            <Users className="w-5 h-5 text-college-gold" /> 1. Team & Leader Details
-          </h3>
+          <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+            <span className="w-6 h-6 rounded-full bg-college-gold text-college-dark flex items-center justify-center font-bold text-xs">1</span>
+            <h3 className="font-serif font-bold text-base text-college-navy uppercase tracking-wide">
+              Team Identity & Problem Statement Details
+            </h3>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1">
-                Team Name <span className="text-red-600">*</span>
+                Team Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 required
-                placeholder="e.g. InnovateX CRR"
+                placeholder="e.g. Cyber Crusaders"
                 value={teamName}
                 onChange={e => setTeamName(e.target.value)}
-                className="w-full px-3.5 py-2 text-xs border border-slate-300 rounded focus:ring-2 focus:ring-college-navy focus:border-college-navy outline-none"
+                className="w-full px-3 py-2 text-xs border border-slate-300 rounded bg-white outline-none focus:ring-1 focus:ring-college-navy"
               />
             </div>
 
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1">
-                Team Leader Name <span className="text-red-600">*</span>
+                Faculty Mentor (Optional)
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. Dr. K. Ramanjaneyulu, Assoc. Prof"
+                value={facultyMentor}
+                onChange={e => setFacultyMentor(e.target.value)}
+                className="w-full px-3 py-2 text-xs border border-slate-300 rounded bg-white outline-none focus:ring-1 focus:ring-college-navy"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                Select Problem Statement ID <span className="text-red-500">*</span>
+              </label>
+              <select
+                value={selectedPsId}
+                onChange={e => {
+                  const val = e.target.value;
+                  setSelectedPsId(val);
+                  const found = problemStatements.find(p => p.psId === val);
+                  if (found) setPsTitle(found.title);
+                }}
+                className="w-full px-3 py-2 text-xs border border-slate-300 rounded bg-white outline-none focus:ring-1 focus:ring-college-navy font-mono"
+              >
+                {problemStatements.map(p => (
+                  <option key={p.id} value={p.psId}>
+                    {p.psId} - {p.organization} ({p.category})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                Problem Statement Title (Auto-Filled)
+              </label>
+              <input
+                type="text"
+                readOnly
+                value={psTitle || (problemStatements.find(p => p.psId === selectedPsId)?.title || '')}
+                className="w-full px-3 py-2 text-xs border border-slate-200 rounded bg-slate-100 text-slate-700 font-medium"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Section 2: Team Leader Information */}
+        <div className="space-y-4 pt-2">
+          <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+            <span className="w-6 h-6 rounded-full bg-college-navy text-white flex items-center justify-center font-bold text-xs">2</span>
+            <h3 className="font-serif font-bold text-base text-college-navy uppercase tracking-wide">
+              Team Leader Details (Member #1 - Primary Contact)
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                Full Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 required
-                placeholder="Full Name as per college records"
+                placeholder="e.g. Sowmya Gadi"
                 value={leaderName}
                 onChange={e => setLeaderName(e.target.value)}
-                className="w-full px-3.5 py-2 text-xs border border-slate-300 rounded focus:ring-2 focus:ring-college-navy focus:border-college-navy outline-none"
+                className="w-full px-3 py-2 text-xs border border-slate-300 rounded bg-white outline-none focus:ring-1 focus:ring-college-navy"
               />
             </div>
 
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1">
-                Team Leader Email <span className="text-red-600">*</span>
+                Email Address <span className="text-red-500">*</span>
               </label>
               <input
                 type="email"
                 required
-                placeholder="student@sircrrcoestd.in"
+                placeholder="e.g. leader@sircrrcoestd.in"
                 value={leaderEmail}
                 onChange={e => setLeaderEmail(e.target.value)}
-                className="w-full px-3.5 py-2 text-xs border border-slate-300 rounded focus:ring-2 focus:ring-college-navy focus:border-college-navy outline-none"
+                className="w-full px-3 py-2 text-xs border border-slate-300 rounded bg-white outline-none focus:ring-1 focus:ring-college-navy"
               />
             </div>
 
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1">
-                Team Leader Phone <span className="text-red-600">*</span>
+                Mobile Number (WhatsApp) <span className="text-red-500">*</span>
               </label>
               <input
                 type="tel"
                 required
-                placeholder="+91 98765 43210"
+                placeholder="e.g. 9014521289"
                 value={leaderPhone}
                 onChange={e => setLeaderPhone(e.target.value)}
-                className="w-full px-3.5 py-2 text-xs border border-slate-300 rounded focus:ring-2 focus:ring-college-navy focus:border-college-navy outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Roll Number / Reg No <span className="text-red-600">*</span>
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="e.g. 21B91A0501"
-                value={leaderRollNumber}
-                onChange={e => setLeaderRollNumber(e.target.value)}
-                className="w-full px-3.5 py-2 text-xs border border-slate-300 rounded focus:ring-2 focus:ring-college-navy focus:border-college-navy outline-none font-mono"
+                className="w-full px-3 py-2 text-xs border border-slate-300 rounded bg-white outline-none focus:ring-1 focus:ring-college-navy font-mono"
               />
             </div>
 
@@ -600,23 +621,6 @@ export default function RegistrationForm() {
               </div>
             </div>
           ))}
-        </div>
-
-        {/* Section 4: Upload Your Problem Statement PPT (Final section before submission) */}
-        <div id="ppt-upload-section" className="space-y-2">
-          <PptUploadSection
-            initialFileName={pptFile?.name}
-            onFileSelected={(file, tempUrl) => {
-              setPptFile(file);
-              setPptFileUrl(tempUrl);
-              setPptError(null);
-            }}
-          />
-          {pptError && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded text-xs text-red-800 font-medium">
-              {pptError}
-            </div>
-          )}
         </div>
 
         {/* Submit Button */}
