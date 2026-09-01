@@ -98,7 +98,7 @@ export default function AlumniPage() {
                       <img
                         src={item.photoUrl}
                         alt={item.name}
-                        className="w-20 h-20 rounded-full object-contain p-0.5 border-2 border-college-gold shrink-0 shadow-sm bg-slate-100"
+                        className="w-20 h-20 rounded-full object-cover p-0.5 border-2 border-college-gold shrink-0 shadow-sm bg-slate-100"
                       />
                     ) : (
                       <div className="w-20 h-20 rounded-full bg-slate-200 border-2 border-college-gold flex items-center justify-center text-slate-500 shrink-0">

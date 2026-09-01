@@ -120,7 +120,7 @@ export default function AlumniCarousel() {
                         <img
                           src={item.photoUrl}
                           alt={item.name}
-                          className="w-full h-full object-contain rounded"
+                          className="w-full h-full object-cover rounded"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-slate-400">

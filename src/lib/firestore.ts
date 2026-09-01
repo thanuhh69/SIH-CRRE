@@ -163,23 +163,13 @@ export const deleteRegistration = async (id: string): Promise<void> => {
 // ==========================================
 // 2. ALUMNI COLLECTION API
 // ==========================================
-let alumniInitialized = false;
-
 export const getAlumni = async (): Promise<Alumni[]> => {
   try {
     const snapshot = await getDocs(collection(db, 'alumni'));
     if (!snapshot.empty) {
-      alumniInitialized = true;
       return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Alumni));
     }
-    if (!alumniInitialized) {
-      alumniInitialized = true;
-      for (const item of ALUMNI_DATA) {
-        await setDoc(doc(db, 'alumni', item.id), item);
-      }
-      return ALUMNI_DATA;
-    }
-    return [];
+    return ALUMNI_DATA;
   } catch (err) {
     console.error('Firestore alumni query failed:', err);
     return ALUMNI_DATA;
@@ -188,19 +178,12 @@ export const getAlumni = async (): Promise<Alumni[]> => {
 
 export const subscribeAlumni = (callback: (alumni: Alumni[]) => void) => {
   try {
-    return onSnapshot(collection(db, 'alumni'), async (snapshot) => {
+    return onSnapshot(collection(db, 'alumni'), (snapshot) => {
       if (!snapshot.empty) {
-        alumniInitialized = true;
         const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Alumni));
         callback(list);
-      } else if (!alumniInitialized) {
-        alumniInitialized = true;
-        for (const item of ALUMNI_DATA) {
-          await setDoc(doc(db, 'alumni', item.id), item);
-        }
-        callback(ALUMNI_DATA);
       } else {
-        callback([]);
+        callback(ALUMNI_DATA);
       }
     }, (err) => {
       console.error('Error in subscribeAlumni snapshot:', err);
@@ -707,44 +690,27 @@ const INITIAL_SLIDESHOW_IMAGES: SlideshowImage[] = [
   }
 ];
 
-let slideshowInitialized = false;
-
 export const getSlideshowImages = async (): Promise<SlideshowImage[]> => {
   try {
     const snapshot = await getDocs(collection(db, 'slideshowImages'));
     if (!snapshot.empty) {
-      slideshowInitialized = true;
       return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as SlideshowImage));
     }
-    if (!slideshowInitialized) {
-      slideshowInitialized = true;
-      for (const img of INITIAL_SLIDESHOW_IMAGES) {
-        await setDoc(doc(db, 'slideshowImages', img.id), img);
-      }
-      return INITIAL_SLIDESHOW_IMAGES;
-    }
-    return INITIAL_SLIDESHOW_IMAGES;
+    return [];
   } catch (err) {
     console.error('Firestore getSlideshowImages error:', err);
-    return INITIAL_SLIDESHOW_IMAGES;
+    return [];
   }
 };
 
 export const subscribeSlideshowImages = (callback: (images: SlideshowImage[]) => void) => {
   try {
-    return onSnapshot(collection(db, 'slideshowImages'), async (snapshot) => {
+    return onSnapshot(collection(db, 'slideshowImages'), (snapshot) => {
       if (!snapshot.empty) {
-        slideshowInitialized = true;
         const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as SlideshowImage));
         callback(list);
-      } else if (!slideshowInitialized) {
-        slideshowInitialized = true;
-        for (const img of INITIAL_SLIDESHOW_IMAGES) {
-          await setDoc(doc(db, 'slideshowImages', img.id), img);
-        }
-        callback(INITIAL_SLIDESHOW_IMAGES);
       } else {
-        callback(INITIAL_SLIDESHOW_IMAGES);
+        callback([]);
       }
     }, (err) => {
       console.error('Error in subscribeSlideshowImages snapshot:', err);
