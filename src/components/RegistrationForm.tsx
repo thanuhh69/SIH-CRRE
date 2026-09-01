@@ -1,28 +1,19 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { createRegistration, getProblemStatements, subscribeSamplePPT } from '@/lib/firestore';
-import { ProblemStatement, TeamMember, TeamRegistration, SamplePPTResource } from '@/types';
+import { createRegistration, subscribeSamplePPT } from '@/lib/firestore';
+import { TeamMember, TeamRegistration, SamplePPTResource } from '@/types';
 import { getCloudinaryDownloadUrl } from '@/lib/storage';
-import { OFFICIAL_SIH_PORTAL_URL } from '@/data/placeholder';
 import { 
   CheckCircle2, 
-  Users, 
   User, 
-  Mail, 
-  Phone, 
-  Building, 
-  BookOpen, 
-  FileCode, 
   Plus, 
   Trash2, 
   Printer, 
-  Sparkles, 
   ShieldCheck,
   AlertCircle,
   Download,
-  FileText,
-  ExternalLink
+  FileText
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -52,7 +43,6 @@ const DEPARTMENTS = [
 const YEARS = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
 
 export default function RegistrationForm() {
-  const [problemStatements, setProblemStatements] = useState<ProblemStatement[]>([]);
   const [loading, setLoading] = useState(false);
   const [submittedRegistration, setSubmittedRegistration] = useState<TeamRegistration | null>(null);
   const [samplePPT, setSamplePPT] = useState<SamplePPTResource | null>(DEFAULT_SAMPLE_PPT);
@@ -65,19 +55,11 @@ export default function RegistrationForm() {
   const [leaderRollNumber, setLeaderRollNumber] = useState('');
   const [department, setDepartment] = useState(DEPARTMENTS[0]);
   const [year, setYear] = useState(YEARS[2]);
-  const [selectedPsId, setSelectedPsId] = useState('');
-  const [psTitle, setPsTitle] = useState('');
-  const [facultyMentor, setFacultyMentor] = useState('');
 
   // Team Members State (Minimum leader + optional 5 extra members)
   const [members, setMembers] = useState<TeamMember[]>([]);
 
   useEffect(() => {
-    getProblemStatements().then(data => {
-      setProblemStatements(data);
-      if (data.length > 0) setSelectedPsId(data[0].psId);
-    });
-
     const unsubscribe = subscribeSamplePPT((ppt) => {
       if (ppt && ppt.published) {
         setSamplePPT(ppt);
@@ -127,9 +109,6 @@ export default function RegistrationForm() {
       }
     }
 
-    const selectedPs = problemStatements.find(p => p.psId === selectedPsId);
-    const titleToUse = psTitle || (selectedPs ? selectedPs.title : 'Selected Problem Statement');
-
     const fullMembersList: TeamMember[] = [
       {
         name: leaderName,
@@ -153,9 +132,6 @@ export default function RegistrationForm() {
         leaderPhone,
         department,
         year,
-        problemStatementId: selectedPsId || 'SIH1000',
-        problemStatementTitle: titleToUse,
-        facultyMentor,
         members: fullMembersList,
       });
 
@@ -306,76 +282,27 @@ export default function RegistrationForm() {
           </div>
         </div>
 
-        {/* Section 1: Team & Problem Statement Info */}
+        {/* Section 1: Team Identity Details */}
         <div className="space-y-4">
           <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
             <span className="w-6 h-6 rounded-full bg-college-gold text-college-dark flex items-center justify-center font-bold text-xs">1</span>
             <h3 className="font-serif font-bold text-base text-college-navy uppercase tracking-wide">
-              Team Identity & Problem Statement Details
+              Team Identity Details
             </h3>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Team Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="e.g. Cyber Crusaders"
-                value={teamName}
-                onChange={e => setTeamName(e.target.value)}
-                className="w-full px-3 py-2 text-xs border border-slate-300 rounded bg-white outline-none focus:ring-1 focus:ring-college-navy"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Faculty Mentor (Optional)
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. Dr. K. Ramanjaneyulu, Assoc. Prof"
-                value={facultyMentor}
-                onChange={e => setFacultyMentor(e.target.value)}
-                className="w-full px-3 py-2 text-xs border border-slate-300 rounded bg-white outline-none focus:ring-1 focus:ring-college-navy"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Select Problem Statement ID <span className="text-red-500">*</span>
-              </label>
-              <select
-                value={selectedPsId}
-                onChange={e => {
-                  const val = e.target.value;
-                  setSelectedPsId(val);
-                  const found = problemStatements.find(p => p.psId === val);
-                  if (found) setPsTitle(found.title);
-                }}
-                className="w-full px-3 py-2 text-xs border border-slate-300 rounded bg-white outline-none focus:ring-1 focus:ring-college-navy font-mono"
-              >
-                {problemStatements.map(p => (
-                  <option key={p.id} value={p.psId}>
-                    {p.psId} - {p.organization} ({p.category})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Problem Statement Title (Auto-Filled)
-              </label>
-              <input
-                type="text"
-                readOnly
-                value={psTitle || (problemStatements.find(p => p.psId === selectedPsId)?.title || '')}
-                className="w-full px-3 py-2 text-xs border border-slate-200 rounded bg-slate-100 text-slate-700 font-medium"
-              />
-            </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1">
+              Team Name <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              required
+              placeholder="e.g. Cyber Crusaders"
+              value={teamName}
+              onChange={e => setTeamName(e.target.value)}
+              className="w-full px-3 py-2 text-xs border border-slate-300 rounded bg-white outline-none focus:ring-1 focus:ring-college-navy"
+            />
           </div>
         </div>
 

@@ -16,8 +16,8 @@ export interface TeamRegistration {
   leaderPhone: string;
   department: string;
   year: string;
-  problemStatementId: string;
-  problemStatementTitle: string;
+  problemStatementId?: string;
+  problemStatementTitle?: string;
   facultyMentor?: string;
   members: TeamMember[];
   attendance?: 'present' | 'absent';
