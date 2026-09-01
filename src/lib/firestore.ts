@@ -196,7 +196,6 @@ export const subscribeAlumni = (callback: (alumni: Alumni[]) => void) => {
 
 export const saveAlumni = async (alumni: Alumni): Promise<void> => {
   try {
-    alumniInitialized = true;
     await setDoc(doc(db, 'alumni', alumni.id), alumni);
   } catch (err) {
     console.error('Firestore saveAlumni error:', err);
@@ -205,7 +204,6 @@ export const saveAlumni = async (alumni: Alumni): Promise<void> => {
 
 export const deleteAlumni = async (id: string): Promise<void> => {
   try {
-    alumniInitialized = true;
     await deleteDoc(doc(db, 'alumni', id));
   } catch (err) {
     console.error('Firestore deleteAlumni error:', err);
