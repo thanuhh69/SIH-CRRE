@@ -6,7 +6,6 @@ import { Calendar, Trophy, ExternalLink, Sparkles, Code2, Cpu } from 'lucide-rea
 import { OFFICIAL_SIH_PORTAL_URL, PRIZE_DATA } from '@/data/placeholder';
 
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 
 export default function RegisterPage() {
   return (
