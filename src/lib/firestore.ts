@@ -54,10 +54,10 @@ const INITIAL_RESULTS_CONFIG: ResultsConfig = {
 };
 
 const INITIAL_SAMPLE_PPT: SamplePPTResource = {
-  fileName: 'SIH_Internal_Hackathon_PPT_Template.pptx',
-  downloadURL: '/templates/SIH_Internal_Hackathon_PPT_Template.pptx',
-  storagePath: 'resources/sample-ppt/SIH_Internal_Hackathon_PPT_Template.pptx',
-  fileSize: 2457600,
+  fileName: 'SIH2025-IDEA-Presentation-Format.pptx',
+  downloadURL: 'https://sih.gov.in/letters/SIH2025-IDEA-Presentation-Format.pptx',
+  storagePath: 'sih-crre/registration-files/SIH2025-IDEA-Presentation-Format.pptx',
+  fileSize: 262144,
   uploadedAt: new Date().toISOString(),
   uploadedBy: 'Admin Committee',
   version: '1.0',

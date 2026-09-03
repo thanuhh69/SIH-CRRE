@@ -238,7 +238,9 @@ export default function RegistrationForm() {
     );
   }
 
-  const activePPT = samplePPT || DEFAULT_SAMPLE_PPT;
+  const activePPT = (samplePPT && samplePPT.published && samplePPT.fileName && !samplePPT.fileName.includes('2026') && !samplePPT.downloadURL.includes('dwzv8izif'))
+    ? samplePPT
+    : DEFAULT_SAMPLE_PPT;
 
   return (
     <div className="bg-white rounded-lg border border-slate-300 shadow-college-lg overflow-hidden">
