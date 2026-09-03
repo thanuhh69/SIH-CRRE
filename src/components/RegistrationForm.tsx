@@ -19,9 +19,9 @@ import {
 import confetti from 'canvas-confetti';
 
 const DEFAULT_SAMPLE_PPT: SamplePPTResource = {
-  fileName: 'SIH2026-IDEA-Presentation-Format.pptx',
-  downloadURL: 'https://res.cloudinary.com/dwzv8izif/raw/upload/v1788187864/sih-crre/registration-files/SMART_INDIA_HACKATHON_2026_TEMPLATE.pptx',
-  storagePath: 'sih-crre/registration-files/SMART_INDIA_HACKATHON_2026_TEMPLATE.pptx',
+  fileName: 'SIH2025-IDEA-Presentation-Format.pptx',
+  downloadURL: 'https://sih.gov.in/letters/SIH2025-IDEA-Presentation-Format.pptx',
+  storagePath: 'sih-crre/registration-files/SIH2025-IDEA-Presentation-Format.pptx',
   fileSize: 262144,
   uploadedAt: new Date().toISOString(),
   uploadedBy: 'Admin Committee',
@@ -275,8 +275,7 @@ export default function RegistrationForm() {
             </div>
 
             <a
-              href={getCloudinaryDownloadUrl(activePPT.downloadURL, activePPT.fileName)}
-              download={activePPT.fileName}
+              href="https://sih.gov.in/letters/SIH2025-IDEA-Presentation-Format.pptx"
               target="_blank"
               rel="noopener noreferrer"
               className="shrink-0 inline-flex items-center gap-2 bg-college-gold hover:bg-college-goldLight text-college-dark px-4 py-2.5 rounded font-bold text-xs shadow-md transition-all border border-amber-300 hover:scale-105"
