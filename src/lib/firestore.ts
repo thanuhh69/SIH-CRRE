@@ -572,7 +572,12 @@ export const getSamplePPT = async (): Promise<SamplePPTResource | null> => {
   try {
     const docSnap = await getDoc(doc(db, 'resources', 'samplePPT'));
     if (docSnap.exists()) {
-      return docSnap.data() as SamplePPTResource;
+      const data = docSnap.data() as SamplePPTResource;
+      if (!data.downloadURL || data.downloadURL.includes('cloudinary') || data.downloadURL.includes('dwzv8izif') || data.fileName?.includes('2026')) {
+        await setDoc(doc(db, 'resources', 'samplePPT'), INITIAL_SAMPLE_PPT);
+        return INITIAL_SAMPLE_PPT;
+      }
+      return data;
     }
     await setDoc(doc(db, 'resources', 'samplePPT'), INITIAL_SAMPLE_PPT);
     return INITIAL_SAMPLE_PPT;
@@ -602,7 +607,13 @@ export const subscribeSamplePPT = (callback: (ppt: SamplePPTResource | null) => 
   try {
     return onSnapshot(doc(db, 'resources', 'samplePPT'), (docSnap) => {
       if (docSnap.exists()) {
-        callback(docSnap.data() as SamplePPTResource);
+        const data = docSnap.data() as SamplePPTResource;
+        if (!data.downloadURL || data.downloadURL.includes('cloudinary') || data.downloadURL.includes('dwzv8izif') || data.fileName?.includes('2026')) {
+          setDoc(doc(db, 'resources', 'samplePPT'), INITIAL_SAMPLE_PPT).catch(() => {});
+          callback(INITIAL_SAMPLE_PPT);
+        } else {
+          callback(data);
+        }
       } else {
         callback(INITIAL_SAMPLE_PPT);
       }
