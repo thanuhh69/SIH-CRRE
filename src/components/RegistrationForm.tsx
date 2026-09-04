@@ -258,7 +258,12 @@ export default function RegistrationForm() {
       <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-8">
         
         {/* OFFICIAL PRESENTATION TEMPLATE BANNER */}
-        <div className="bg-gradient-to-r from-college-navy via-slate-900 to-college-blue text-white p-5 rounded-lg border-2 border-college-gold/40 shadow-md">
+        <a
+          href="https://sih.gov.in/letters/SIH2025-IDEA-Presentation-Format.pptx"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block bg-gradient-to-r from-college-navy via-slate-900 to-college-blue text-white p-5 rounded-lg border-2 border-college-gold/40 shadow-md transition-all hover:border-college-gold hover:shadow-lg group cursor-pointer"
+        >
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-college-gold text-xs font-bold font-mono uppercase tracking-wider">
@@ -274,17 +279,12 @@ export default function RegistrationForm() {
               </div>
             </div>
 
-            <a
-              href="https://sih.gov.in/letters/SIH2025-IDEA-Presentation-Format.pptx"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="shrink-0 inline-flex items-center gap-2 bg-college-gold hover:bg-college-goldLight text-college-dark px-4 py-2.5 rounded font-bold text-xs shadow-md transition-all border border-amber-300 hover:scale-105"
-            >
+            <div className="shrink-0 inline-flex items-center gap-2 bg-college-gold group-hover:bg-college-goldLight text-college-dark px-4 py-2.5 rounded font-bold text-xs shadow-md transition-all border border-amber-300 group-hover:scale-105">
               <Download className="w-4 h-4" />
               <span>📥 DOWNLOAD SAMPLE PPT</span>
-            </a>
+            </div>
           </div>
-        </div>
+        </a>
 
         {/* Section 1: Team Identity Details */}
         <div className="space-y-4">
